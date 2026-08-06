@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Naseer Al Jadidi — Launch Tracker</title>
+<style>
+  :root{
+    --green-950:#0b2b28;
+    --green-900:#0f3d3a;
+    --green-800:#14524d;
+    --gold-500:#c9a227;
+    --gold-400:#dab94a;
+    --cream-100:#faf6ec;
+    --cream-200:#f2ead6;
+    --ink-900:#1c1a14;
+    --ink-600:#5b564a;
+    --red-500:#c0392b;
+    --red-100:#fbe4e0;
+    --amber-500:#b7791f;
+    --amber-100:#fbecd3;
+    --green-done:#2e7d5b;
+    --green-done-100:#e1f3ea;
+    --border:#e4dcc7;
+    --shadow: 0 2px 10px rgba(15,61,58,0.08);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--cream-100);
+    color:var(--ink-900);
+  }
+  header{
+    background:linear-gradient(135deg,var(--green-950),var(--green-800));
+    color:var(--cream-100);
+    padding:28px 32px 24px;
+  }
+  header h1{
+    margin:0 0 4px;
+    font-size:24px;
+    letter-spacing:0.3px;
+    font-weight:700;
+  }
+  header .sub{
+    margin:0;
+    font-size:13.5px;
+    color:var(--cream-200);
+    opacity:0.85;
+  }
+  .countdowns{
+    display:flex;
+    gap:16px;
+    margin-top:18px;
+    flex-wrap:wrap;
+  }
+  .cd-card{
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.15);
+    border-radius:10px;
+    padding:14px 18px;
+    min-width:200px;
+    flex:1;
+  }
+  .cd-card .label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.8px;
+    color:var(--gold-400);
+    font-weight:700;
+    margin-bottom:6px;
+  }
+  .cd-card .days{
+    font-size:24px;
+    font-weight:800;
+    line-height:1;
+  }
+  .cd-card .date{
+    font-size:12px;
+    color:var(--cream-200);
+    margin-top:4px;
+  }
+  .cd-card .bar-track{
+    margin-top:10px;
+    height:7px;
+    background:rgba(255,255,255,0.18);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .cd-card .bar-fill{
+    height:100%;
+    background:var(--gold-400);
+    border-radius:4px;
+    transition:width .3s ease;
+  }
+  .cd-card .pct{
+    font-size:11px;
+    color:var(--cream-200);
+    margin-top:5px;
+  }
+
+  main{
+    max-width:1400px;
+    margin:0 auto;
+    padding:22px 24px 60px;
+  }
+
+  .toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:14px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+  }
+  .toolbar select, .toolbar input[type=text]{
+    padding:8px 10px;
+    border-radius:7px;
+    border:1px solid var(--border);
+    font-size:13px;
+    background:var(--cream-100);
+    color:var(--ink-900);
+  }
+  .toolbar input[type=text]{
+    min-width:200px;
+    flex:1;
+  }
+  .toolbar button{
+    padding:8px 14px;
+    border-radius:7px;
+    border:1px solid var(--green-800);
+    background:var(--green-900);
+    color:#fff;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .toolbar button.secondary{
+    background:#fff;
+    color:var(--green-900);
+  }
+  .toolbar button:hover{opacity:0.88;}
+
+  .summary-row{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .chip{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:6px 14px;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-600);
+  }
+  .chip b{color:var(--ink-900);}
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+  thead th{
+    text-align:left;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    color:var(--ink-600);
+    background:var(--cream-200);
+    padding:10px 10px;
+    border-bottom:1px solid var(--border);
+    white-space:nowrap;
+  }
+  tbody td{
+    padding:9px 10px;
+    border-bottom:1px solid var(--border);
+    font-size:13px;
+    vertical-align:middle;
+  }
+  tbody tr:hover{background:#fbf9f2;}
+  tbody tr.done{opacity:0.55;}
+  tbody tr.overdue td{background:var(--red-100);}
+  tbody tr.soon td{background:var(--amber-100);}
+
+  .badge{
+    display:inline-block;
+    padding:3px 9px;
+    border-radius:12px;
+    font-size:11px;
+    font-weight:700;
+    white-space:nowrap;
+  }
+  .badge.le{background:#ede4f7;color:#5b3a8c;}
+  .badge.ec{background:#e5f0ee;color:var(--green-800);}
+  .badge.bq{background:#f4e9d3;color:#8a6416;}
+
+  .badge.prio-High{background:#fbe4e0;color:var(--red-500);}
+  .badge.prio-Medium{background:#fbecd3;color:var(--amber-500);}
+  .badge.prio-Low{background:#e9edf2;color:#4a5568;}
+
+  select.status-select{
+    font-size:12px;
+    padding:5px 6px;
+    border-radius:6px;
+    border:1px solid var(--border);
+    font-weight:600;
+  }
+  select.status-select.st-Not-Started{background:#eef0f2;color:#556;}
+  select.status-select.st-In-Progress{background:#e2eefc;color:#1d5faa;}
+  select.status-select.st-Done{background:var(--green-done-100);color:var(--green-done);}
+  select.status-select.st-Blocked{background:var(--red-100);color:var(--red-500);}
+
+  input.owner-input, input.notes-input{
+    width:100%;
+    border:1px solid transparent;
+    background:transparent;
+    font-size:13px;
+    padding:4px 5px;
+    border-radius:5px;
+    color:var(--ink-900);
+    font-family:inherit;
+  }
+  input.owner-input:hover, input.notes-input:hover,
+  input.owner-input:focus, input.notes-input:focus{
+    border-color:var(--border);
+    background:var(--cream-100);
+  }
+  input.notes-input{min-width:140px;}
+
+  .task-cell{max-width:300px;}
+  .task-name{font-weight:600;}
+  .task-id{font-size:11px;color:var(--ink-600);}
+
+  input[type=checkbox]{
+    width:17px;height:17px;
+    accent-color:var(--green-done);
+    cursor:pointer;
+  }
+
+  .cat-group-row td{
+    background:var(--green-950);
+    color:var(--cream-100);
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:0.3px;
+    padding:8px 12px;
+  }
+
+  footer{
+    max-width:1400px;
+    margin:0 auto;
+    padding:10px 24px 40px;
+    color:var(--ink-600);
+    font-size:12px;
+    line-height:1.6;
+  }
+  @media (max-width:720px){
+    .toolbar input[type=text]{min-width:120px;}
+    thead{display:none;}
+    table, tbody, tr, td{display:block; width:100%;}
+    tbody tr{border-bottom:2px solid var(--border); padding:8px 0;}
+    tbody td{border-bottom:none; padding:4px 12px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Naseer Al Jadidi — Launch Tracker</h1>
+  <p class="sub">Men's boutique &amp; e-commerce, Lombard IL — Middle Eastern clothing, perfumes, designer-inspired fragrances, oud oils &amp; attars</p>
+  <div class="countdowns" id="countdowns"></div>
+</header>
+
+<main>
+  <div class="toolbar">
+    <select id="f-phase">
+      <option value="all">All phases</option>
+      <option value="LE">Legal &amp; Entity (Aug 20)</option>
+      <option value="EC">E-commerce (Aug 25)</option>
+      <option value="BQ">Boutique (Oct 1)</option>
+    </select>
+    <select id="f-category"><option value="all">All categories</option></select>
+    <select id="f-status">
+      <option value="all">All statuses</option>
+      <option value="Not Started">Not Started</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Done">Done</option>
+      <option value="Blocked">Blocked</option>
+    </select>
+    <select id="f-owner"><option value="all">All owners</option></select>
+    <select id="f-priority">
+      <option value="all">All priorities</option>
+      <option value="High">High</option>
+      <option value="Medium">Medium</option>
+      <option value="Low">Low</option>
+    </select>
+    <input type="text" id="f-search" placeholder="Search tasks...">
+    <button id="btn-export" class="secondary">Export CSV</button>
+    <button id="btn-reset" class="secondary">Reset all progress</button>
+  </div>
+
+  <div class="summary-row" id="summary"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>ID</th>
+        <th>Phase</th>
+        <th>Task</th>
+        <th>Owner</th>
+        <th>Start</th>
+        <th>Due</th>
+        <th>Priority</th>
+        <th>Status</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</main>
+
+<footer>
+  Naseer Al Jadidi launch tracker · Targets: LLC &amp; legal setup 20 Aug 2026 · e-commerce go-live 25 Aug 2026 · boutique grand opening 1 Oct 2026.<br>
+  Edit owner/status/notes inline — changes save in your own browser only (not shared between people). Use "Export CSV" to back up or circulate progress.<br>
+  Legal and tax items are starting points for discussion with an Illinois attorney/CPA, not professional advice. Verify all Lombard and DuPage County requirements directly with the Village (630-620-5913 licensing, 630-620-5750 building).
+</footer>
+
+<script>
+const TASKS = [
+// ================= LEGAL & ENTITY SETUP =================
+{id:"LE-01",phase:"LE",category:"LLC Formation",task:"Decide single-member vs multi-member LLC (tax + IL replacement tax impact) — consult CPA",owner:"Founder",start:"2026-08-06",due:"2026-08-08",priority:"High"},
+{id:"LE-02",phase:"LE",category:"LLC Formation",task:"Check name availability in Illinois SOS business database",owner:"Founder",start:"2026-08-06",due:"2026-08-07",priority:"High"},
+{id:"LE-03",phase:"LE",category:"LLC Formation",task:"Appoint registered agent (self with IL street address, or paid service)",owner:"Founder",start:"2026-08-07",due:"2026-08-08",priority:"High"},
+{id:"LE-04",phase:"LE",category:"LLC Formation",task:"File Articles of Organization with IL SOS — $150 standard, $250 for 24hr expedited",owner:"Founder",start:"2026-08-08",due:"2026-08-10",priority:"High"},
+{id:"LE-05",phase:"LE",category:"LLC Formation",task:"Obtain EIN from IRS (free, online, issued immediately)",owner:"Founder",start:"2026-08-11",due:"2026-08-12",priority:"High"},
+{id:"LE-06",phase:"LE",category:"LLC Formation",task:"Draft & sign operating agreement (ownership %, profit split, voting, manager-managed?)",owner:"Founder",start:"2026-08-10",due:"2026-08-16",priority:"High"},
+{id:"LE-07",phase:"LE",category:"LLC Formation",task:"Calendar annual report: $75, due 1st day of formation anniversary month",owner:"Founder",start:"2026-08-16",due:"2026-08-18",priority:"Low"},
+
+{id:"LE-08",phase:"LE",category:"Tax & Registration",task:"Register with IL Dept of Revenue for sales tax (MyTax Illinois, Form REG-1)",owner:"Founder",start:"2026-08-12",due:"2026-08-16",priority:"High"},
+{id:"LE-09",phase:"LE",category:"Tax & Registration",task:"Confirm combined sales tax rate for Lombard / DuPage County collection",owner:"Founder",start:"2026-08-12",due:"2026-08-16",priority:"High"},
+{id:"LE-10",phase:"LE",category:"Tax & Registration",task:"Engage CPA / set up bookkeeping system before first sale",owner:"Founder",start:"2026-08-10",due:"2026-08-20",priority:"Medium"},
+
+{id:"LE-11",phase:"LE",category:"Compliance & Risk",task:"Trademark clearance search on \"Naseer Al Jadidi\" name & logo (USPTO TESS)",owner:"Founder",start:"2026-08-08",due:"2026-08-15",priority:"High"},
+{id:"LE-12",phase:"LE",category:"Compliance & Risk",task:"Legal review: designer-inspired fragrance naming & marketing claims (trademark risk)",owner:"Founder",start:"2026-08-08",due:"2026-08-16",priority:"High"},
+{id:"LE-13",phase:"LE",category:"Compliance & Risk",task:"FDA cosmetics compliance for perfumes/attars — MoCRA facility registration & product listing",owner:"Procurement",start:"2026-08-12",due:"2026-08-20",priority:"High"},
+{id:"LE-14",phase:"LE",category:"Compliance & Risk",task:"Confirm US import/customs requirements for perfume & oud shipments",owner:"Procurement",start:"2026-08-08",due:"2026-08-16",priority:"High"},
+{id:"LE-15",phase:"LE",category:"Compliance & Risk",task:"Check hazmat/ORM-D shipping rules for alcohol-based fragrances (carrier restrictions)",owner:"Web/Marketing",start:"2026-08-10",due:"2026-08-18",priority:"High"},
+{id:"LE-16",phase:"LE",category:"Compliance & Risk",task:"Business insurance: general liability, product liability, property, business interruption",owner:"Founder",start:"2026-08-12",due:"2026-08-20",priority:"High"},
+
+// ================= E-COMMERCE PHASE =================
+{id:"EC-01",phase:"EC",category:"Brand & Setup",task:"Finalize brand identity (logo, colors, packaging look)",owner:"Founder",start:"2026-08-06",due:"2026-08-10",priority:"High"},
+{id:"EC-02",phase:"EC",category:"Brand & Setup",task:"Purchase domain & set up DNS",owner:"Web/Marketing",start:"2026-08-06",due:"2026-08-08",priority:"High"},
+{id:"EC-03",phase:"EC",category:"Brand & Setup",task:"Open business bank account (requires EIN + Articles of Organization)",owner:"Founder",start:"2026-08-12",due:"2026-08-16",priority:"High"},
+{id:"EC-04",phase:"EC",category:"Brand & Setup",task:"Set up payment processor / merchant account (Stripe, Shopify Payments, etc.)",owner:"Founder",start:"2026-08-14",due:"2026-08-18",priority:"High"},
+
+{id:"EC-05",phase:"EC",category:"Sourcing & Inventory",task:"Finalize suppliers: Middle Eastern clothing (thobes, jalabiyas, bishts)",owner:"Procurement",start:"2026-08-06",due:"2026-08-10",priority:"High"},
+{id:"EC-06",phase:"EC",category:"Sourcing & Inventory",task:"Finalize suppliers: perfumes & designer-inspired fragrances",owner:"Procurement",start:"2026-08-06",due:"2026-08-10",priority:"High"},
+{id:"EC-07",phase:"EC",category:"Sourcing & Inventory",task:"Finalize suppliers: oud oils & attars",owner:"Procurement",start:"2026-08-06",due:"2026-08-10",priority:"High"},
+{id:"EC-08",phase:"EC",category:"Sourcing & Inventory",task:"Negotiate pricing, MOQs & payment terms",owner:"Procurement",start:"2026-08-08",due:"2026-08-13",priority:"High"},
+{id:"EC-09",phase:"EC",category:"Sourcing & Inventory",task:"Place initial inventory purchase order",owner:"Procurement",start:"2026-08-10",due:"2026-08-14",priority:"High"},
+{id:"EC-10",phase:"EC",category:"Sourcing & Inventory",task:"Confirm supplier lead times & delivery",owner:"Procurement",start:"2026-08-10",due:"2026-08-16",priority:"High"},
+{id:"EC-11",phase:"EC",category:"Sourcing & Inventory",task:"Quality check & receive first inventory shipment",owner:"Procurement",start:"2026-08-16",due:"2026-08-20",priority:"High"},
+{id:"EC-12",phase:"EC",category:"Sourcing & Inventory",task:"Build SKU list, sizing/scent notes, pricing sheet",owner:"Procurement",start:"2026-08-12",due:"2026-08-17",priority:"Medium"},
+{id:"EC-13",phase:"EC",category:"Sourcing & Inventory",task:"Product photography (flat-lay & lifestyle)",owner:"Web/Marketing",start:"2026-08-14",due:"2026-08-19",priority:"High"},
+{id:"EC-14",phase:"EC",category:"Sourcing & Inventory",task:"Write product descriptions (EN/AR) with FDA-compliant ingredient labeling",owner:"Web/Marketing",start:"2026-08-15",due:"2026-08-20",priority:"Medium"},
+
+{id:"EC-15",phase:"EC",category:"E-commerce Platform",task:"Choose e-commerce platform (Shopify, WooCommerce, BigCommerce)",owner:"Web/Marketing",start:"2026-08-06",due:"2026-08-08",priority:"High"},
+{id:"EC-16",phase:"EC",category:"E-commerce Platform",task:"Store setup: theme, homepage, navigation",owner:"Web/Marketing",start:"2026-08-08",due:"2026-08-14",priority:"High"},
+{id:"EC-17",phase:"EC",category:"E-commerce Platform",task:"Upload product catalog & categories",owner:"Web/Marketing",start:"2026-08-17",due:"2026-08-21",priority:"High"},
+{id:"EC-18",phase:"EC",category:"E-commerce Platform",task:"Integrate payment processor into store",owner:"Web/Marketing",start:"2026-08-18",due:"2026-08-21",priority:"High"},
+{id:"EC-19",phase:"EC",category:"E-commerce Platform",task:"Configure shipping zones, rates & carriers (incl. fragrance restrictions)",owner:"Web/Marketing",start:"2026-08-14",due:"2026-08-19",priority:"High"},
+{id:"EC-20",phase:"EC",category:"E-commerce Platform",task:"Configure Illinois sales tax collection & nexus settings in platform",owner:"Web/Marketing",start:"2026-08-16",due:"2026-08-20",priority:"High"},
+{id:"EC-21",phase:"EC",category:"E-commerce Platform",task:"Set up legal pages: returns, privacy, T&Cs, shipping policy",owner:"Founder",start:"2026-08-15",due:"2026-08-20",priority:"Medium"},
+{id:"EC-22",phase:"EC",category:"E-commerce Platform",task:"Mobile responsiveness & speed optimization check",owner:"Web/Marketing",start:"2026-08-19",due:"2026-08-21",priority:"Medium"},
+{id:"EC-23",phase:"EC",category:"E-commerce Platform",task:"Set up order/inventory management & notifications",owner:"Web/Marketing",start:"2026-08-16",due:"2026-08-20",priority:"Medium"},
+{id:"EC-24",phase:"EC",category:"E-commerce Platform",task:"Full checkout QA (test orders, payment, tax, shipping)",owner:"Web/Marketing",start:"2026-08-20",due:"2026-08-23",priority:"High"},
+
+{id:"EC-25",phase:"EC",category:"Marketing & Launch Prep",task:"Create Instagram & TikTok business accounts",owner:"Web/Marketing",start:"2026-08-06",due:"2026-08-08",priority:"Medium"},
+{id:"EC-26",phase:"EC",category:"Marketing & Launch Prep",task:"Build content calendar for launch teaser",owner:"Web/Marketing",start:"2026-08-08",due:"2026-08-12",priority:"Medium"},
+{id:"EC-27",phase:"EC",category:"Marketing & Launch Prep",task:"Shoot teaser/reels content",owner:"Web/Marketing",start:"2026-08-14",due:"2026-08-20",priority:"Medium"},
+{id:"EC-28",phase:"EC",category:"Marketing & Launch Prep",task:"Reach out to micro-influencers (US fashion & fragrance niche)",owner:"Web/Marketing",start:"2026-08-12",due:"2026-08-22",priority:"Medium"},
+{id:"EC-29",phase:"EC",category:"Marketing & Launch Prep",task:"Build email/SMS launch waitlist",owner:"Web/Marketing",start:"2026-08-10",due:"2026-08-24",priority:"Low"},
+{id:"EC-30",phase:"EC",category:"Marketing & Launch Prep",task:"Plan launch-day promo (discount code/giveaway)",owner:"Web/Marketing",start:"2026-08-18",due:"2026-08-24",priority:"Medium"},
+{id:"EC-31",phase:"EC",category:"Marketing & Launch Prep",task:"Prepare launch announcement post & press note",owner:"Web/Marketing",start:"2026-08-20",due:"2026-08-24",priority:"Low"},
+{id:"EC-32",phase:"EC",category:"Marketing & Launch Prep",task:"Set up Google Business Profile for Lombard location",owner:"Web/Marketing",start:"2026-08-15",due:"2026-08-24",priority:"Medium"},
+
+{id:"EC-33",phase:"EC",category:"Go-Live",task:"Final site-wide QA & mobile test",owner:"Web/Marketing",start:"2026-08-23",due:"2026-08-23",priority:"High"},
+{id:"EC-34",phase:"EC",category:"Go-Live",task:"Soft launch to friends/family for test orders",owner:"Founder",start:"2026-08-23",due:"2026-08-24",priority:"Medium"},
+{id:"EC-35",phase:"EC",category:"Go-Live",task:"Public e-commerce launch",owner:"Founder",start:"2026-08-25",due:"2026-08-25",priority:"High"},
+
+// ================= BOUTIQUE PHASE =================
+{id:"BQ-01",phase:"BQ",category:"Permits & Village Approvals",task:"Confirm zoning approval for retail use at Lombard address (Village Planning)",owner:"Founder",start:"2026-08-10",due:"2026-08-18",priority:"High"},
+{id:"BQ-02",phase:"BQ",category:"Permits & Village Approvals",task:"Apply for Certificate of Occupancy — Lombard Building Division, 630-620-5750",owner:"Founder",start:"2026-08-12",due:"2026-09-10",priority:"High"},
+{id:"BQ-03",phase:"BQ",category:"Permits & Village Approvals",task:"Confirm whether a Village business license is required — call 630-620-5913",owner:"Founder",start:"2026-08-10",due:"2026-08-17",priority:"High"},
+{id:"BQ-04",phase:"BQ",category:"Permits & Village Approvals",task:"Obtain build/remodel permit for fit-out work before construction starts",owner:"Founder",start:"2026-08-14",due:"2026-08-24",priority:"High"},
+{id:"BQ-05",phase:"BQ",category:"Permits & Village Approvals",task:"Fire inspection & life-safety sign-off",owner:"Founder",start:"2026-09-08",due:"2026-09-22",priority:"High"},
+{id:"BQ-06",phase:"BQ",category:"Permits & Village Approvals",task:"Apply for sign permit from Village of Lombard",owner:"Founder",start:"2026-09-01",due:"2026-09-15",priority:"Medium"},
+{id:"BQ-07",phase:"BQ",category:"Permits & Village Approvals",task:"Confirm ADA accessibility compliance for storefront & fitting rooms",owner:"Retail Ops",start:"2026-08-20",due:"2026-09-10",priority:"High"},
+
+{id:"BQ-08",phase:"BQ",category:"Store Design & Fit-Out",task:"Finalize interior design concept & mood board (incl. scent/perfume bar)",owner:"Founder",start:"2026-08-10",due:"2026-08-17",priority:"High"},
+{id:"BQ-09",phase:"BQ",category:"Store Design & Fit-Out",task:"Get fit-out quotes from 3 licensed contractors",owner:"Founder",start:"2026-08-12",due:"2026-08-19",priority:"High"},
+{id:"BQ-10",phase:"BQ",category:"Store Design & Fit-Out",task:"Select contractor & sign fit-out contract (verify Lombard contractor registration)",owner:"Founder",start:"2026-08-19",due:"2026-08-22",priority:"High"},
+{id:"BQ-11",phase:"BQ",category:"Store Design & Fit-Out",task:"Fit-out construction: flooring, walls, lighting",owner:"Retail Ops",start:"2026-08-25",due:"2026-09-10",priority:"High"},
+{id:"BQ-12",phase:"BQ",category:"Store Design & Fit-Out",task:"Install fixtures: clothing racks, perfume counter, oud bar",owner:"Retail Ops",start:"2026-09-08",due:"2026-09-18",priority:"High"},
+{id:"BQ-13",phase:"BQ",category:"Store Design & Fit-Out",task:"Signage design (Arabic/English) & Village approval",owner:"Web/Marketing",start:"2026-09-01",due:"2026-09-10",priority:"Medium"},
+{id:"BQ-14",phase:"BQ",category:"Store Design & Fit-Out",task:"Signage manufacturing & installation",owner:"Retail Ops",start:"2026-09-10",due:"2026-09-22",priority:"Medium"},
+{id:"BQ-15",phase:"BQ",category:"Store Design & Fit-Out",task:"Furniture, mirrors, seating & décor procurement",owner:"Retail Ops",start:"2026-08-25",due:"2026-09-15",priority:"Medium"},
+{id:"BQ-16",phase:"BQ",category:"Store Design & Fit-Out",task:"Store lighting & scent-diffusion ambiance setup",owner:"Retail Ops",start:"2026-09-10",due:"2026-09-20",priority:"Low"},
+
+{id:"BQ-17",phase:"BQ",category:"Inventory & Operations",task:"Place larger in-store inventory order",owner:"Procurement",start:"2026-09-01",due:"2026-09-15",priority:"High"},
+{id:"BQ-18",phase:"BQ",category:"Inventory & Operations",task:"Receive & QC in-store inventory",owner:"Procurement",start:"2026-09-15",due:"2026-09-22",priority:"High"},
+{id:"BQ-19",phase:"BQ",category:"Inventory & Operations",task:"Select & install in-store POS system with IL tax rates configured",owner:"Retail Ops",start:"2026-09-05",due:"2026-09-15",priority:"High"},
+{id:"BQ-20",phase:"BQ",category:"Inventory & Operations",task:"Sync inventory system between store & e-commerce",owner:"Web/Marketing",start:"2026-09-10",due:"2026-09-20",priority:"Medium"},
+{id:"BQ-21",phase:"BQ",category:"Inventory & Operations",task:"Write store operations manual / SOPs",owner:"Founder",start:"2026-09-10",due:"2026-09-20",priority:"Medium"},
+{id:"BQ-22",phase:"BQ",category:"Inventory & Operations",task:"Set up security (CCTV, alarm, tagging)",owner:"Retail Ops",start:"2026-09-10",due:"2026-09-24",priority:"Medium"},
+{id:"BQ-23",phase:"BQ",category:"Inventory & Operations",task:"Set up store WiFi & back-office systems",owner:"Retail Ops",start:"2026-09-15",due:"2026-09-22",priority:"Low"},
+
+{id:"BQ-24",phase:"BQ",category:"Staffing",task:"Define roles: store manager, sales associates",owner:"Founder",start:"2026-08-20",due:"2026-08-26",priority:"High"},
+{id:"BQ-25",phase:"BQ",category:"Staffing",task:"Set up payroll, workers' comp insurance & IL new-hire reporting",owner:"Founder",start:"2026-08-26",due:"2026-09-12",priority:"High"},
+{id:"BQ-26",phase:"BQ",category:"Staffing",task:"Recruit & interview store staff",owner:"Founder",start:"2026-08-26",due:"2026-09-15",priority:"High"},
+{id:"BQ-27",phase:"BQ",category:"Staffing",task:"Hire & onboard store manager (I-9, W-4, offer letter)",owner:"Founder",start:"2026-09-05",due:"2026-09-15",priority:"High"},
+{id:"BQ-28",phase:"BQ",category:"Staffing",task:"Hire & onboard sales associates",owner:"Founder",start:"2026-09-10",due:"2026-09-20",priority:"High"},
+{id:"BQ-29",phase:"BQ",category:"Staffing",task:"Staff product training (fabrics, oud/attar knowledge, fragrance families)",owner:"Founder",start:"2026-09-20",due:"2026-09-27",priority:"High"},
+{id:"BQ-30",phase:"BQ",category:"Staffing",task:"Customer service & POS training",owner:"Retail Ops",start:"2026-09-22",due:"2026-09-28",priority:"Medium"},
+{id:"BQ-31",phase:"BQ",category:"Staffing",task:"Order staff uniforms",owner:"Retail Ops",start:"2026-09-10",due:"2026-09-25",priority:"Low"},
+
+{id:"BQ-32",phase:"BQ",category:"Marketing for Boutique Launch",task:"Local marketing plan (DuPage County outreach, community partnerships)",owner:"Web/Marketing",start:"2026-09-01",due:"2026-09-20",priority:"Medium"},
+{id:"BQ-33",phase:"BQ",category:"Marketing for Boutique Launch",task:"Plan grand opening event (guest list, catering, entertainment)",owner:"Web/Marketing",start:"2026-09-05",due:"2026-09-25",priority:"Medium"},
+{id:"BQ-34",phase:"BQ",category:"Marketing for Boutique Launch",task:"Press & media invitations (local Chicago-area outlets)",owner:"Web/Marketing",start:"2026-09-15",due:"2026-09-25",priority:"Low"},
+{id:"BQ-35",phase:"BQ",category:"Marketing for Boutique Launch",task:"Opening week promotions & offers",owner:"Web/Marketing",start:"2026-09-20",due:"2026-10-01",priority:"Medium"},
+{id:"BQ-36",phase:"BQ",category:"Marketing for Boutique Launch",task:"Social media countdown & teaser campaign for boutique",owner:"Web/Marketing",start:"2026-09-15",due:"2026-09-30",priority:"Medium"},
+
+{id:"BQ-37",phase:"BQ",category:"Go-Live",task:"Final store walkthrough & compliance check",owner:"Founder",start:"2026-09-28",due:"2026-09-29",priority:"High"},
+{id:"BQ-38",phase:"BQ",category:"Go-Live",task:"Soft opening (friends/family/VIPs)",owner:"Founder",start:"2026-09-30",due:"2026-09-30",priority:"Medium"},
+{id:"BQ-39",phase:"BQ",category:"Go-Live",task:"Grand opening",owner:"Founder",start:"2026-10-01",due:"2026-10-01",priority:"High"},
+];
+
+const PHASES = [
+  {key:"LE", label:"Legal & Entity Setup", short:"Legal", due:"2026-08-20", dueLabel:"20 Aug 2026"},
+  {key:"EC", label:"E-commerce Launch",    short:"E-comm", due:"2026-08-25", dueLabel:"25 Aug 2026"},
+  {key:"BQ", label:"Boutique Opening",     short:"Boutique", due:"2026-10-01", dueLabel:"1 Oct 2026"}
+];
+
+const STORE_KEY = "naj_tracker_state_v2";
+const DEFAULT_STATUS = "Not Started";
+
+function loadState(){
+  try{
+    return JSON.parse(localStorage.getItem(STORE_KEY)) || {};
+  }catch(e){ return {}; }
+}
+function saveState(s){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(e){}
+}
+let state = loadState();
+
+function getTaskState(id, orig){
+  const s = state[id] || {};
+  return {
+    status: s.status || DEFAULT_STATUS,
+    owner: (s.owner !== undefined) ? s.owner : orig.owner,
+    notes: s.notes || ""
+  };
+}
+function setTaskState(id, patch){
+  state[id] = Object.assign({}, state[id]||{}, patch);
+  saveState(state);
+}
+
+function todayISO(){
+  const d = new Date();
+  const off = d.getTimezoneOffset();
+  return new Date(d.getTime() - off*60000).toISOString().slice(0,10);
+}
+function daysBetween(a,b){
+  const A = new Date(a+"T00:00:00");
+  const B = new Date(b+"T00:00:00");
+  return Math.round((B-A)/86400000);
+}
+function escapeAttr(s){
+  return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+function escapeHtml(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function renderCountdowns(){
+  const today = todayISO();
+  const html = PHASES.map(p=>{
+    const list = TASKS.filter(t=>t.phase===p.key);
+    const done = list.filter(t=>getTaskState(t.id,t).status==="Done").length;
+    const pct = list.length ? Math.round(100*done/list.length) : 0;
+    const days = daysBetween(today, p.due);
+    const daysText = days > 0 ? days + ' days left'
+                   : days === 0 ? 'Due today'
+                   : Math.abs(days) + ' days overdue';
+    return `
+      <div class="cd-card">
+        <div class="label">${p.label}</div>
+        <div class="days">${daysText}</div>
+        <div class="date">Target: ${p.dueLabel}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+        <div class="pct">${done}/${list.length} tasks done (${pct}%)</div>
+      </div>`;
+  }).join("");
+  document.getElementById("countdowns").innerHTML = html;
+}
+
+function phaseShort(key){
+  const p = PHASES.find(x=>x.key===key);
+  return p ? p.short : key;
+}
+function phaseLabel(key){
+  const p = PHASES.find(x=>x.key===key);
+  return p ? p.label : key;
+}
+
+function populateFilters(){
+  const cats = [...new Set(TASKS.map(t=>t.category))];
+  const owners = [...new Set(TASKS.map(t=>t.owner))];
+  const catSel = document.getElementById("f-category");
+  cats.forEach(c=>{
+    const o = document.createElement("option");
+    o.value = c; o.textContent = c;
+    catSel.appendChild(o);
+  });
+  const ownerSel = document.getElementById("f-owner");
+  owners.forEach(o=>{
+    const opt = document.createElement("option");
+    opt.value = o; opt.textContent = o;
+    ownerSel.appendChild(opt);
+  });
+}
+
+function currentFilters(){
+  return {
+    phase: document.getElementById("f-phase").value,
+    category: document.getElementById("f-category").value,
+    status: document.getElementById("f-status").value,
+    owner: document.getElementById("f-owner").value,
+    priority: document.getElementById("f-priority").value,
+    search: document.getElementById("f-search").value.trim().toLowerCase()
+  };
+}
+
+function renderSummary(filtered){
+  const today = todayISO();
+  const total = filtered.length;
+  const done = filtered.filter(t=>getTaskState(t.id,t).status==="Done").length;
+  const inProg = filtered.filter(t=>getTaskState(t.id,t).status==="In Progress").length;
+  const blocked = filtered.filter(t=>getTaskState(t.id,t).status==="Blocked").length;
+  const overdue = filtered.filter(t=>{
+    const st = getTaskState(t.id,t).status;
+    return st!=="Done" && t.due < today;
+  }).length;
+  document.getElementById("summary").innerHTML = `
+    <span class="chip">Showing <b>${total}</b> tasks</span>
+    <span class="chip">Done <b>${done}</b></span>
+    <span class="chip">In progress <b>${inProg}</b></span>
+    <span class="chip">Blocked <b>${blocked}</b></span>
+    <span class="chip">Overdue <b>${overdue}</b></span>
+  `;
+}
+
+function fmtDate(iso){
+  const d = new Date(iso+"T00:00:00");
+  return d.toLocaleDateString("en-GB",{day:"2-digit",month:"short"});
+}
+
+function render(){
+  const f = currentFilters();
+  const today = todayISO();
+
+  const filtered = TASKS.filter(t=>{
+    const ts = getTaskState(t.id, t);
+    if(f.phase!=="all" && t.phase!==f.phase) return false;
+    if(f.category!=="all" && t.category!==f.category) return false;
+    if(f.status!=="all" && ts.status!==f.status) return false;
+    if(f.owner!=="all" && ts.owner!==f.owner) return false;
+    if(f.priority!=="all" && t.priority!==f.priority) return false;
+    if(f.search){
+      const hay = (t.task+" "+t.id+" "+t.category+" "+ts.owner).toLowerCase();
+      if(!hay.includes(f.search)) return false;
+    }
+    return true;
+  });
+
+  filtered.sort((a,b)=> a.due.localeCompare(b.due) || a.id.localeCompare(b.id));
+
+  renderSummary(filtered);
+
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML = "";
+
+  let lastGroupKey = null;
+  const groupByCategory = (f.phase === "all" && f.category === "all");
+
+  filtered.forEach(t=>{
+    const ts = getTaskState(t.id, t);
+    const groupKey = t.phase+"|"+t.category;
+    if(groupByCategory && groupKey !== lastGroupKey){
+      const gtr = document.createElement("tr");
+      gtr.className = "cat-group-row";
+      gtr.innerHTML = `<td colspan="10">${escapeHtml(phaseLabel(t.phase))} — ${escapeHtml(t.category)}</td>`;
+      tbody.appendChild(gtr);
+      lastGroupKey = groupKey;
+    }
+
+    const isDone = ts.status === "Done";
+    const isOverdue = !isDone && t.due < today;
+    const isSoon = !isDone && !isOverdue && daysBetween(today, t.due) <= 3;
+
+    const tr = document.createElement("tr");
+    tr.className = (isDone?"done ":"") + (isOverdue?"overdue":(isSoon?"soon":""));
+
+    tr.innerHTML = `
+      <td><input type="checkbox" ${isDone?"checked":""} data-id="${t.id}" class="chk-done"></td>
+      <td>${t.id}</td>
+      <td><span class="badge ${t.phase.toLowerCase()}">${escapeHtml(phaseShort(t.phase))}</span></td>
+      <td class="task-cell"><div class="task-name">${escapeHtml(t.task)}</div><div class="task-id">${escapeHtml(t.category)}</div></td>
+      <td><input type="text" class="owner-input" data-id="${t.id}" value="${escapeAttr(ts.owner)}"></td>
+      <td>${fmtDate(t.start)}</td>
+      <td>${fmtDate(t.due)}</td>
+      <td><span class="badge prio-${t.priority}">${t.priority}</span></td>
+      <td>
+        <select class="status-select st-${ts.status.replace(/ /g,'-')}" data-id="${t.id}">
+          <option ${ts.status==="Not Started"?"selected":""}>Not Started</option>
+          <option ${ts.status==="In Progress"?"selected":""}>In Progress</option>
+          <option ${ts.status==="Done"?"selected":""}>Done</option>
+          <option ${ts.status==="Blocked"?"selected":""}>Blocked</option>
+        </select>
+      </td>
+      <td><input type="text" class="notes-input" data-id="${t.id}" placeholder="add note..." value="${escapeAttr(ts.notes)}"></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll(".chk-done").forEach(cb=>{
+    cb.addEventListener("change", e=>{
+      setTaskState(e.target.dataset.id, {status: e.target.checked ? "Done" : "Not Started"});
+      render();
+      renderCountdowns();
+    });
+  });
+  tbody.querySelectorAll(".status-select").forEach(sel=>{
+    sel.addEventListener("change", e=>{
+      setTaskState(e.target.dataset.id, {status: e.target.value});
+      render();
+      renderCountdowns();
+    });
+  });
+  tbody.querySelectorAll(".owner-input").forEach(inp=>{
+    inp.addEventListener("change", e=>{
+      setTaskState(e.target.dataset.id, {owner: e.target.value});
+      render();
+    });
+  });
+  tbody.querySelectorAll(".notes-input").forEach(inp=>{
+    inp.addEventListener("change", e=>{
+      setTaskState(e.target.dataset.id, {notes: e.target.value});
+    });
+  });
+}
+
+function exportCSV(){
+  const rows = [["ID","Phase","Category","Task","Owner","Start","Due","Priority","Status","Notes"]];
+  TASKS.forEach(t=>{
+    const ts = getTaskState(t.id, t);
+    rows.push([t.id, phaseLabel(t.phase), t.category, t.task, ts.owner, t.start, t.due, t.priority, ts.status, ts.notes]);
+  });
+  const csv = rows.map(r=> r.map(v=>{
+    const s = String(v).replace(/"/g,'""');
+    return /[",\n]/.test(s) ? `"${s}"` : s;
+  }).join(",")).join("\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "naseer-al-jadidi-launch-tracker.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById("f-phase").addEventListener("change", render);
+document.getElementById("f-category").addEventListener("change", render);
+document.getElementById("f-status").addEventListener("change", render);
+document.getElementById("f-owner").addEventListener("change", render);
+document.getElementById("f-priority").addEventListener("change", render);
+document.getElementById("f-search").addEventListener("input", render);
+document.getElementById("btn-export").addEventListener("click", exportCSV);
+document.getElementById("btn-reset").addEventListener("click", ()=>{
+  if(confirm("Reset all statuses, owner edits and notes back to defaults? This cannot be undone.")){
+    state = {};
+    saveState(state);
+    render();
+    renderCountdowns();
+  }
+});
+
+populateFilters();
+renderCountdowns();
+render();
+</script>
+</body>
+</html>
