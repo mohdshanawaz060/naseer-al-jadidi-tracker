@@ -9,7 +9,6 @@
     --green-950:#0b2b28;
     --green-900:#0f3d3a;
     --green-800:#14524d;
-    --green-700:#1a6960;
     --gold-500:#c9a227;
     --gold-400:#dab94a;
     --cream-100:#faf6ec;
@@ -60,7 +59,7 @@
     border:1px solid rgba(255,255,255,0.15);
     border-radius:10px;
     padding:14px 18px;
-    min-width:210px;
+    min-width:200px;
     flex:1;
   }
   .cd-card .label{
@@ -72,7 +71,7 @@
     margin-bottom:6px;
   }
   .cd-card .days{
-    font-size:26px;
+    font-size:24px;
     font-weight:800;
     line-height:1;
   }
@@ -199,7 +198,9 @@
     border-radius:12px;
     font-size:11px;
     font-weight:700;
+    white-space:nowrap;
   }
+  .badge.le{background:#ede4f7;color:#5b3a8c;}
   .badge.ec{background:#e5f0ee;color:var(--green-800);}
   .badge.bq{background:#f4e9d3;color:#8a6416;}
 
@@ -236,7 +237,7 @@
   }
   input.notes-input{min-width:140px;}
 
-  .task-cell{max-width:280px;}
+  .task-cell{max-width:300px;}
   .task-name{font-weight:600;}
   .task-id{font-size:11px;color:var(--ink-600);}
 
@@ -261,6 +262,7 @@
     padding:10px 24px 40px;
     color:var(--ink-600);
     font-size:12px;
+    line-height:1.6;
   }
   @media (max-width:720px){
     .toolbar input[type=text]{min-width:120px;}
@@ -275,7 +277,7 @@
 
 <header>
   <h1>Naseer Al Jadidi — Launch Tracker</h1>
-  <p class="sub">Men's boutique &amp; e-commerce — Middle Eastern clothing, perfumes, designer-inspired fragrances, oud oils &amp; attars</p>
+  <p class="sub">Men's boutique &amp; e-commerce, Lombard IL — Middle Eastern clothing, perfumes, designer-inspired fragrances, oud oils &amp; attars</p>
   <div class="countdowns" id="countdowns"></div>
 </header>
 
@@ -283,6 +285,7 @@
   <div class="toolbar">
     <select id="f-phase">
       <option value="all">All phases</option>
+      <option value="LE">Legal &amp; Entity (Aug 20)</option>
       <option value="EC">E-commerce (Aug 25)</option>
       <option value="BQ">Boutique (Oct 1)</option>
     </select>
@@ -328,98 +331,128 @@
 </main>
 
 <footer>
-  Naseer Al Jadidi launch tracker · Generated for target dates: e-commerce go-live 25 Aug 2026, boutique grand opening 1 Oct 2026. Edit owner/status/notes inline — changes save automatically in this browser. Use "Export CSV" to back up or share progress.
+  Naseer Al Jadidi launch tracker · Targets: LLC &amp; legal setup 20 Aug 2026 · e-commerce go-live 25 Aug 2026 · boutique grand opening 1 Oct 2026.<br>
+  Edit owner/status/notes inline — changes save in your own browser only (not shared between people). Use "Export CSV" to back up or circulate progress.<br>
+  Legal and tax items are starting points for discussion with an Illinois attorney/CPA, not professional advice. Verify all Lombard and DuPage County requirements directly with the Village (630-620-5913 licensing, 630-620-5750 building).
 </footer>
 
 <script>
 const TASKS = [
-// ---- E-COMMERCE PHASE ----
-{id:"EC-01",phase:"EC",category:"Brand & Legal",task:"Finalize brand identity (logo, colors, packaging look)",owner:"Founder",start:"2026-08-05",due:"2026-08-09",priority:"High"},
-{id:"EC-02",phase:"EC",category:"Brand & Legal",task:"Register/confirm trade license & business registration",owner:"Founder",start:"2026-08-05",due:"2026-08-12",priority:"High"},
-{id:"EC-03",phase:"EC",category:"Brand & Legal",task:"Purchase domain & set up DNS",owner:"Web/Marketing",start:"2026-08-05",due:"2026-08-06",priority:"High"},
-{id:"EC-04",phase:"EC",category:"Brand & Legal",task:"Open business bank account",owner:"Founder",start:"2026-08-05",due:"2026-08-14",priority:"High"},
-{id:"EC-05",phase:"EC",category:"Brand & Legal",task:"Set up payment gateway merchant account",owner:"Founder",start:"2026-08-06",due:"2026-08-13",priority:"High"},
-{id:"EC-06",phase:"EC",category:"Brand & Legal",task:"Confirm import/customs docs for perfume & oud shipments",owner:"Procurement",start:"2026-08-05",due:"2026-08-15",priority:"High"},
-{id:"EC-07",phase:"EC",category:"Brand & Legal",task:"Trademark check on business name/logo",owner:"Founder",start:"2026-08-05",due:"2026-08-10",priority:"Medium"},
+// ================= LEGAL & ENTITY SETUP =================
+{id:"LE-01",phase:"LE",category:"LLC Formation",task:"Decide single-member vs multi-member LLC (tax + IL replacement tax impact) — consult CPA",owner:"Founder",start:"2026-08-06",due:"2026-08-08",priority:"High"},
+{id:"LE-02",phase:"LE",category:"LLC Formation",task:"Check name availability in Illinois SOS business database",owner:"Founder",start:"2026-08-06",due:"2026-08-07",priority:"High"},
+{id:"LE-03",phase:"LE",category:"LLC Formation",task:"Appoint registered agent (self with IL street address, or paid service)",owner:"Founder",start:"2026-08-07",due:"2026-08-08",priority:"High"},
+{id:"LE-04",phase:"LE",category:"LLC Formation",task:"File Articles of Organization with IL SOS — $150 standard, $250 for 24hr expedited",owner:"Founder",start:"2026-08-08",due:"2026-08-10",priority:"High"},
+{id:"LE-05",phase:"LE",category:"LLC Formation",task:"Obtain EIN from IRS (free, online, issued immediately)",owner:"Founder",start:"2026-08-11",due:"2026-08-12",priority:"High"},
+{id:"LE-06",phase:"LE",category:"LLC Formation",task:"Draft & sign operating agreement (ownership %, profit split, voting, manager-managed?)",owner:"Founder",start:"2026-08-10",due:"2026-08-16",priority:"High"},
+{id:"LE-07",phase:"LE",category:"LLC Formation",task:"Calendar annual report: $75, due 1st day of formation anniversary month",owner:"Founder",start:"2026-08-16",due:"2026-08-18",priority:"Low"},
 
-{id:"EC-08",phase:"EC",category:"Sourcing & Inventory",task:"Finalize suppliers: Middle Eastern clothing (thobes, abayas, jalabiyas)",owner:"Procurement",start:"2026-08-05",due:"2026-08-09",priority:"High"},
-{id:"EC-09",phase:"EC",category:"Sourcing & Inventory",task:"Finalize suppliers: perfumes & designer-inspired fragrances",owner:"Procurement",start:"2026-08-05",due:"2026-08-09",priority:"High"},
-{id:"EC-10",phase:"EC",category:"Sourcing & Inventory",task:"Finalize suppliers: oud oils & attars",owner:"Procurement",start:"2026-08-05",due:"2026-08-09",priority:"High"},
-{id:"EC-11",phase:"EC",category:"Sourcing & Inventory",task:"Negotiate pricing, MOQs & payment terms",owner:"Procurement",start:"2026-08-08",due:"2026-08-13",priority:"High"},
-{id:"EC-12",phase:"EC",category:"Sourcing & Inventory",task:"Place initial inventory purchase order",owner:"Procurement",start:"2026-08-10",due:"2026-08-14",priority:"High"},
-{id:"EC-13",phase:"EC",category:"Sourcing & Inventory",task:"Confirm supplier lead times & delivery",owner:"Procurement",start:"2026-08-10",due:"2026-08-16",priority:"High"},
-{id:"EC-14",phase:"EC",category:"Sourcing & Inventory",task:"Quality check & receive first inventory shipment",owner:"Procurement",start:"2026-08-16",due:"2026-08-20",priority:"High"},
-{id:"EC-15",phase:"EC",category:"Sourcing & Inventory",task:"Build SKU list, sizing/scent notes, pricing sheet",owner:"Procurement",start:"2026-08-12",due:"2026-08-17",priority:"Medium"},
-{id:"EC-16",phase:"EC",category:"Sourcing & Inventory",task:"Product photography (flat-lay & lifestyle)",owner:"Web/Marketing",start:"2026-08-14",due:"2026-08-19",priority:"High"},
-{id:"EC-17",phase:"EC",category:"Sourcing & Inventory",task:"Write product descriptions (EN/AR)",owner:"Web/Marketing",start:"2026-08-15",due:"2026-08-20",priority:"Medium"},
+{id:"LE-08",phase:"LE",category:"Tax & Registration",task:"Register with IL Dept of Revenue for sales tax (MyTax Illinois, Form REG-1)",owner:"Founder",start:"2026-08-12",due:"2026-08-16",priority:"High"},
+{id:"LE-09",phase:"LE",category:"Tax & Registration",task:"Confirm combined sales tax rate for Lombard / DuPage County collection",owner:"Founder",start:"2026-08-12",due:"2026-08-16",priority:"High"},
+{id:"LE-10",phase:"LE",category:"Tax & Registration",task:"Engage CPA / set up bookkeeping system before first sale",owner:"Founder",start:"2026-08-10",due:"2026-08-20",priority:"Medium"},
 
-{id:"EC-18",phase:"EC",category:"E-commerce Platform",task:"Choose e-commerce platform (Shopify/Salla/Zid)",owner:"Web/Marketing",start:"2026-08-05",due:"2026-08-06",priority:"High"},
-{id:"EC-19",phase:"EC",category:"E-commerce Platform",task:"Store setup: theme, homepage, navigation",owner:"Web/Marketing",start:"2026-08-06",due:"2026-08-13",priority:"High"},
-{id:"EC-20",phase:"EC",category:"E-commerce Platform",task:"Upload product catalog & categories",owner:"Web/Marketing",start:"2026-08-17",due:"2026-08-21",priority:"High"},
-{id:"EC-21",phase:"EC",category:"E-commerce Platform",task:"Integrate payment gateway into store",owner:"Web/Marketing",start:"2026-08-13",due:"2026-08-16",priority:"High"},
-{id:"EC-22",phase:"EC",category:"E-commerce Platform",task:"Configure shipping zones, rates & carriers",owner:"Web/Marketing",start:"2026-08-12",due:"2026-08-17",priority:"High"},
-{id:"EC-23",phase:"EC",category:"E-commerce Platform",task:"Configure VAT/tax settings",owner:"Web/Marketing",start:"2026-08-12",due:"2026-08-15",priority:"Medium"},
-{id:"EC-24",phase:"EC",category:"E-commerce Platform",task:"Set up legal pages: returns, privacy, T&Cs, shipping policy",owner:"Founder",start:"2026-08-15",due:"2026-08-19",priority:"Medium"},
-{id:"EC-25",phase:"EC",category:"E-commerce Platform",task:"Mobile responsiveness & speed optimization check",owner:"Web/Marketing",start:"2026-08-19",due:"2026-08-21",priority:"Medium"},
-{id:"EC-26",phase:"EC",category:"E-commerce Platform",task:"Set up order/inventory management & notifications",owner:"Web/Marketing",start:"2026-08-16",due:"2026-08-20",priority:"Medium"},
-{id:"EC-27",phase:"EC",category:"E-commerce Platform",task:"Full checkout QA (test orders, payment, shipping)",owner:"Web/Marketing",start:"2026-08-20",due:"2026-08-23",priority:"High"},
+{id:"LE-11",phase:"LE",category:"Compliance & Risk",task:"Trademark clearance search on \"Naseer Al Jadidi\" name & logo (USPTO TESS)",owner:"Founder",start:"2026-08-08",due:"2026-08-15",priority:"High"},
+{id:"LE-12",phase:"LE",category:"Compliance & Risk",task:"Legal review: designer-inspired fragrance naming & marketing claims (trademark risk)",owner:"Founder",start:"2026-08-08",due:"2026-08-16",priority:"High"},
+{id:"LE-13",phase:"LE",category:"Compliance & Risk",task:"FDA cosmetics compliance for perfumes/attars — MoCRA facility registration & product listing",owner:"Procurement",start:"2026-08-12",due:"2026-08-20",priority:"High"},
+{id:"LE-14",phase:"LE",category:"Compliance & Risk",task:"Confirm US import/customs requirements for perfume & oud shipments",owner:"Procurement",start:"2026-08-08",due:"2026-08-16",priority:"High"},
+{id:"LE-15",phase:"LE",category:"Compliance & Risk",task:"Check hazmat/ORM-D shipping rules for alcohol-based fragrances (carrier restrictions)",owner:"Web/Marketing",start:"2026-08-10",due:"2026-08-18",priority:"High"},
+{id:"LE-16",phase:"LE",category:"Compliance & Risk",task:"Business insurance: general liability, product liability, property, business interruption",owner:"Founder",start:"2026-08-12",due:"2026-08-20",priority:"High"},
 
-{id:"EC-28",phase:"EC",category:"Marketing & Launch Prep",task:"Create Instagram & TikTok business accounts",owner:"Web/Marketing",start:"2026-08-05",due:"2026-08-07",priority:"Medium"},
-{id:"EC-29",phase:"EC",category:"Marketing & Launch Prep",task:"Build content calendar for launch teaser",owner:"Web/Marketing",start:"2026-08-08",due:"2026-08-12",priority:"Medium"},
-{id:"EC-30",phase:"EC",category:"Marketing & Launch Prep",task:"Shoot teaser/reels content",owner:"Web/Marketing",start:"2026-08-14",due:"2026-08-20",priority:"Medium"},
-{id:"EC-31",phase:"EC",category:"Marketing & Launch Prep",task:"Reach out to micro-influencers (GCC fashion & fragrance)",owner:"Web/Marketing",start:"2026-08-12",due:"2026-08-22",priority:"Medium"},
-{id:"EC-32",phase:"EC",category:"Marketing & Launch Prep",task:"Build email/WhatsApp launch waitlist",owner:"Web/Marketing",start:"2026-08-10",due:"2026-08-24",priority:"Low"},
-{id:"EC-33",phase:"EC",category:"Marketing & Launch Prep",task:"Plan launch-day promo (discount code/giveaway)",owner:"Web/Marketing",start:"2026-08-18",due:"2026-08-24",priority:"Medium"},
-{id:"EC-34",phase:"EC",category:"Marketing & Launch Prep",task:"Prepare launch announcement post & press note",owner:"Web/Marketing",start:"2026-08-20",due:"2026-08-24",priority:"Low"},
+// ================= E-COMMERCE PHASE =================
+{id:"EC-01",phase:"EC",category:"Brand & Setup",task:"Finalize brand identity (logo, colors, packaging look)",owner:"Founder",start:"2026-08-06",due:"2026-08-10",priority:"High"},
+{id:"EC-02",phase:"EC",category:"Brand & Setup",task:"Purchase domain & set up DNS",owner:"Web/Marketing",start:"2026-08-06",due:"2026-08-08",priority:"High"},
+{id:"EC-03",phase:"EC",category:"Brand & Setup",task:"Open business bank account (requires EIN + Articles of Organization)",owner:"Founder",start:"2026-08-12",due:"2026-08-16",priority:"High"},
+{id:"EC-04",phase:"EC",category:"Brand & Setup",task:"Set up payment processor / merchant account (Stripe, Shopify Payments, etc.)",owner:"Founder",start:"2026-08-14",due:"2026-08-18",priority:"High"},
 
-{id:"EC-35",phase:"EC",category:"Go-Live",task:"Final site-wide QA & mobile test",owner:"Web/Marketing",start:"2026-08-23",due:"2026-08-23",priority:"High"},
-{id:"EC-36",phase:"EC",category:"Go-Live",task:"Soft launch to friends/family for test orders",owner:"Founder",start:"2026-08-23",due:"2026-08-24",priority:"Medium"},
-{id:"EC-37",phase:"EC",category:"Go-Live",task:"Public e-commerce launch",owner:"Founder",start:"2026-08-25",due:"2026-08-25",priority:"High"},
+{id:"EC-05",phase:"EC",category:"Sourcing & Inventory",task:"Finalize suppliers: Middle Eastern clothing (thobes, jalabiyas, bishts)",owner:"Procurement",start:"2026-08-06",due:"2026-08-10",priority:"High"},
+{id:"EC-06",phase:"EC",category:"Sourcing & Inventory",task:"Finalize suppliers: perfumes & designer-inspired fragrances",owner:"Procurement",start:"2026-08-06",due:"2026-08-10",priority:"High"},
+{id:"EC-07",phase:"EC",category:"Sourcing & Inventory",task:"Finalize suppliers: oud oils & attars",owner:"Procurement",start:"2026-08-06",due:"2026-08-10",priority:"High"},
+{id:"EC-08",phase:"EC",category:"Sourcing & Inventory",task:"Negotiate pricing, MOQs & payment terms",owner:"Procurement",start:"2026-08-08",due:"2026-08-13",priority:"High"},
+{id:"EC-09",phase:"EC",category:"Sourcing & Inventory",task:"Place initial inventory purchase order",owner:"Procurement",start:"2026-08-10",due:"2026-08-14",priority:"High"},
+{id:"EC-10",phase:"EC",category:"Sourcing & Inventory",task:"Confirm supplier lead times & delivery",owner:"Procurement",start:"2026-08-10",due:"2026-08-16",priority:"High"},
+{id:"EC-11",phase:"EC",category:"Sourcing & Inventory",task:"Quality check & receive first inventory shipment",owner:"Procurement",start:"2026-08-16",due:"2026-08-20",priority:"High"},
+{id:"EC-12",phase:"EC",category:"Sourcing & Inventory",task:"Build SKU list, sizing/scent notes, pricing sheet",owner:"Procurement",start:"2026-08-12",due:"2026-08-17",priority:"Medium"},
+{id:"EC-13",phase:"EC",category:"Sourcing & Inventory",task:"Product photography (flat-lay & lifestyle)",owner:"Web/Marketing",start:"2026-08-14",due:"2026-08-19",priority:"High"},
+{id:"EC-14",phase:"EC",category:"Sourcing & Inventory",task:"Write product descriptions (EN/AR) with FDA-compliant ingredient labeling",owner:"Web/Marketing",start:"2026-08-15",due:"2026-08-20",priority:"Medium"},
 
-// ---- BOUTIQUE PHASE ----
-{id:"BQ-01",phase:"BQ",category:"Store Design & Fit-Out",task:"Finalize interior design concept & mood board (incl. scent/perfume bar)",owner:"Founder",start:"2026-08-10",due:"2026-08-17",priority:"High"},
-{id:"BQ-02",phase:"BQ",category:"Store Design & Fit-Out",task:"Get fit-out quotes from 3 contractors",owner:"Founder",start:"2026-08-12",due:"2026-08-19",priority:"High"},
-{id:"BQ-03",phase:"BQ",category:"Store Design & Fit-Out",task:"Select contractor & sign fit-out contract",owner:"Founder",start:"2026-08-19",due:"2026-08-21",priority:"High"},
-{id:"BQ-04",phase:"BQ",category:"Store Design & Fit-Out",task:"Fit-out construction: flooring, walls, lighting",owner:"Retail Ops",start:"2026-08-24",due:"2026-09-10",priority:"High"},
-{id:"BQ-05",phase:"BQ",category:"Store Design & Fit-Out",task:"Install fixtures: clothing racks, perfume counter, oud bar",owner:"Retail Ops",start:"2026-09-08",due:"2026-09-18",priority:"High"},
-{id:"BQ-06",phase:"BQ",category:"Store Design & Fit-Out",task:"Signage design (Arabic/English) & approval",owner:"Web/Marketing",start:"2026-09-01",due:"2026-09-10",priority:"Medium"},
-{id:"BQ-07",phase:"BQ",category:"Store Design & Fit-Out",task:"Signage manufacturing & installation",owner:"Retail Ops",start:"2026-09-10",due:"2026-09-22",priority:"Medium"},
-{id:"BQ-08",phase:"BQ",category:"Store Design & Fit-Out",task:"Furniture, mirrors, seating & décor procurement",owner:"Retail Ops",start:"2026-08-25",due:"2026-09-15",priority:"Medium"},
-{id:"BQ-09",phase:"BQ",category:"Store Design & Fit-Out",task:"Store lighting & scent-diffusion ambiance setup",owner:"Retail Ops",start:"2026-09-10",due:"2026-09-20",priority:"Low"},
+{id:"EC-15",phase:"EC",category:"E-commerce Platform",task:"Choose e-commerce platform (Shopify, WooCommerce, BigCommerce)",owner:"Web/Marketing",start:"2026-08-06",due:"2026-08-08",priority:"High"},
+{id:"EC-16",phase:"EC",category:"E-commerce Platform",task:"Store setup: theme, homepage, navigation",owner:"Web/Marketing",start:"2026-08-08",due:"2026-08-14",priority:"High"},
+{id:"EC-17",phase:"EC",category:"E-commerce Platform",task:"Upload product catalog & categories",owner:"Web/Marketing",start:"2026-08-17",due:"2026-08-21",priority:"High"},
+{id:"EC-18",phase:"EC",category:"E-commerce Platform",task:"Integrate payment processor into store",owner:"Web/Marketing",start:"2026-08-18",due:"2026-08-21",priority:"High"},
+{id:"EC-19",phase:"EC",category:"E-commerce Platform",task:"Configure shipping zones, rates & carriers (incl. fragrance restrictions)",owner:"Web/Marketing",start:"2026-08-14",due:"2026-08-19",priority:"High"},
+{id:"EC-20",phase:"EC",category:"E-commerce Platform",task:"Configure Illinois sales tax collection & nexus settings in platform",owner:"Web/Marketing",start:"2026-08-16",due:"2026-08-20",priority:"High"},
+{id:"EC-21",phase:"EC",category:"E-commerce Platform",task:"Set up legal pages: returns, privacy, T&Cs, shipping policy",owner:"Founder",start:"2026-08-15",due:"2026-08-20",priority:"Medium"},
+{id:"EC-22",phase:"EC",category:"E-commerce Platform",task:"Mobile responsiveness & speed optimization check",owner:"Web/Marketing",start:"2026-08-19",due:"2026-08-21",priority:"Medium"},
+{id:"EC-23",phase:"EC",category:"E-commerce Platform",task:"Set up order/inventory management & notifications",owner:"Web/Marketing",start:"2026-08-16",due:"2026-08-20",priority:"Medium"},
+{id:"EC-24",phase:"EC",category:"E-commerce Platform",task:"Full checkout QA (test orders, payment, tax, shipping)",owner:"Web/Marketing",start:"2026-08-20",due:"2026-08-23",priority:"High"},
 
-{id:"BQ-10",phase:"BQ",category:"Licensing & Compliance",task:"Retail trade license / municipality permit for physical store",owner:"Founder",start:"2026-08-10",due:"2026-08-28",priority:"High"},
-{id:"BQ-11",phase:"BQ",category:"Licensing & Compliance",task:"Civil defense / fire safety approval",owner:"Founder",start:"2026-09-01",due:"2026-09-15",priority:"High"},
-{id:"BQ-12",phase:"BQ",category:"Licensing & Compliance",task:"Signage permit from municipality",owner:"Founder",start:"2026-09-05",due:"2026-09-15",priority:"Medium"},
-{id:"BQ-13",phase:"BQ",category:"Licensing & Compliance",task:"Attar/perfume product compliance check (local regs)",owner:"Procurement",start:"2026-08-15",due:"2026-08-25",priority:"Medium"},
+{id:"EC-25",phase:"EC",category:"Marketing & Launch Prep",task:"Create Instagram & TikTok business accounts",owner:"Web/Marketing",start:"2026-08-06",due:"2026-08-08",priority:"Medium"},
+{id:"EC-26",phase:"EC",category:"Marketing & Launch Prep",task:"Build content calendar for launch teaser",owner:"Web/Marketing",start:"2026-08-08",due:"2026-08-12",priority:"Medium"},
+{id:"EC-27",phase:"EC",category:"Marketing & Launch Prep",task:"Shoot teaser/reels content",owner:"Web/Marketing",start:"2026-08-14",due:"2026-08-20",priority:"Medium"},
+{id:"EC-28",phase:"EC",category:"Marketing & Launch Prep",task:"Reach out to micro-influencers (US fashion & fragrance niche)",owner:"Web/Marketing",start:"2026-08-12",due:"2026-08-22",priority:"Medium"},
+{id:"EC-29",phase:"EC",category:"Marketing & Launch Prep",task:"Build email/SMS launch waitlist",owner:"Web/Marketing",start:"2026-08-10",due:"2026-08-24",priority:"Low"},
+{id:"EC-30",phase:"EC",category:"Marketing & Launch Prep",task:"Plan launch-day promo (discount code/giveaway)",owner:"Web/Marketing",start:"2026-08-18",due:"2026-08-24",priority:"Medium"},
+{id:"EC-31",phase:"EC",category:"Marketing & Launch Prep",task:"Prepare launch announcement post & press note",owner:"Web/Marketing",start:"2026-08-20",due:"2026-08-24",priority:"Low"},
+{id:"EC-32",phase:"EC",category:"Marketing & Launch Prep",task:"Set up Google Business Profile for Lombard location",owner:"Web/Marketing",start:"2026-08-15",due:"2026-08-24",priority:"Medium"},
 
-{id:"BQ-14",phase:"BQ",category:"Inventory & Operations",task:"Place larger in-store inventory order",owner:"Procurement",start:"2026-09-01",due:"2026-09-15",priority:"High"},
-{id:"BQ-15",phase:"BQ",category:"Inventory & Operations",task:"Receive & QC in-store inventory",owner:"Procurement",start:"2026-09-15",due:"2026-09-22",priority:"High"},
-{id:"BQ-16",phase:"BQ",category:"Inventory & Operations",task:"Select & install in-store POS system",owner:"Retail Ops",start:"2026-09-05",due:"2026-09-15",priority:"High"},
-{id:"BQ-17",phase:"BQ",category:"Inventory & Operations",task:"Sync inventory system between store & e-commerce",owner:"Web/Marketing",start:"2026-09-10",due:"2026-09-20",priority:"Medium"},
-{id:"BQ-18",phase:"BQ",category:"Inventory & Operations",task:"Write store operations manual / SOPs",owner:"Founder",start:"2026-09-10",due:"2026-09-20",priority:"Medium"},
-{id:"BQ-19",phase:"BQ",category:"Inventory & Operations",task:"Set up security (CCTV, alarm, tagging)",owner:"Retail Ops",start:"2026-09-10",due:"2026-09-24",priority:"Medium"},
-{id:"BQ-20",phase:"BQ",category:"Inventory & Operations",task:"Set up store WiFi & back-office systems",owner:"Retail Ops",start:"2026-09-15",due:"2026-09-22",priority:"Low"},
+{id:"EC-33",phase:"EC",category:"Go-Live",task:"Final site-wide QA & mobile test",owner:"Web/Marketing",start:"2026-08-23",due:"2026-08-23",priority:"High"},
+{id:"EC-34",phase:"EC",category:"Go-Live",task:"Soft launch to friends/family for test orders",owner:"Founder",start:"2026-08-23",due:"2026-08-24",priority:"Medium"},
+{id:"EC-35",phase:"EC",category:"Go-Live",task:"Public e-commerce launch",owner:"Founder",start:"2026-08-25",due:"2026-08-25",priority:"High"},
 
-{id:"BQ-21",phase:"BQ",category:"Staffing",task:"Define roles: store manager, sales associates",owner:"Founder",start:"2026-08-20",due:"2026-08-25",priority:"High"},
-{id:"BQ-22",phase:"BQ",category:"Staffing",task:"Recruit & interview store staff",owner:"Founder",start:"2026-08-25",due:"2026-09-15",priority:"High"},
-{id:"BQ-23",phase:"BQ",category:"Staffing",task:"Hire & onboard store manager",owner:"Founder",start:"2026-09-05",due:"2026-09-15",priority:"High"},
-{id:"BQ-24",phase:"BQ",category:"Staffing",task:"Hire & onboard sales associates",owner:"Founder",start:"2026-09-10",due:"2026-09-20",priority:"High"},
-{id:"BQ-25",phase:"BQ",category:"Staffing",task:"Staff product training (fabrics, oud/attar knowledge, fragrance families)",owner:"Founder",start:"2026-09-20",due:"2026-09-27",priority:"High"},
-{id:"BQ-26",phase:"BQ",category:"Staffing",task:"Customer service & POS training",owner:"Retail Ops",start:"2026-09-22",due:"2026-09-28",priority:"Medium"},
-{id:"BQ-27",phase:"BQ",category:"Staffing",task:"Order staff uniforms",owner:"Retail Ops",start:"2026-09-10",due:"2026-09-25",priority:"Low"},
+// ================= BOUTIQUE PHASE =================
+{id:"BQ-01",phase:"BQ",category:"Permits & Village Approvals",task:"Confirm zoning approval for retail use at Lombard address (Village Planning)",owner:"Founder",start:"2026-08-10",due:"2026-08-18",priority:"High"},
+{id:"BQ-02",phase:"BQ",category:"Permits & Village Approvals",task:"Apply for Certificate of Occupancy — Lombard Building Division, 630-620-5750",owner:"Founder",start:"2026-08-12",due:"2026-09-10",priority:"High"},
+{id:"BQ-03",phase:"BQ",category:"Permits & Village Approvals",task:"Confirm whether a Village business license is required — call 630-620-5913",owner:"Founder",start:"2026-08-10",due:"2026-08-17",priority:"High"},
+{id:"BQ-04",phase:"BQ",category:"Permits & Village Approvals",task:"Obtain build/remodel permit for fit-out work before construction starts",owner:"Founder",start:"2026-08-14",due:"2026-08-24",priority:"High"},
+{id:"BQ-05",phase:"BQ",category:"Permits & Village Approvals",task:"Fire inspection & life-safety sign-off",owner:"Founder",start:"2026-09-08",due:"2026-09-22",priority:"High"},
+{id:"BQ-06",phase:"BQ",category:"Permits & Village Approvals",task:"Apply for sign permit from Village of Lombard",owner:"Founder",start:"2026-09-01",due:"2026-09-15",priority:"Medium"},
+{id:"BQ-07",phase:"BQ",category:"Permits & Village Approvals",task:"Confirm ADA accessibility compliance for storefront & fitting rooms",owner:"Retail Ops",start:"2026-08-20",due:"2026-09-10",priority:"High"},
 
-{id:"BQ-28",phase:"BQ",category:"Marketing for Boutique Launch",task:"Local marketing plan (flyers, area partnerships, local influencers)",owner:"Web/Marketing",start:"2026-09-01",due:"2026-09-20",priority:"Medium"},
-{id:"BQ-29",phase:"BQ",category:"Marketing for Boutique Launch",task:"Plan grand opening event (guest list, vendor, entertainment)",owner:"Web/Marketing",start:"2026-09-05",due:"2026-09-25",priority:"Medium"},
-{id:"BQ-30",phase:"BQ",category:"Marketing for Boutique Launch",task:"Press & media invitations",owner:"Web/Marketing",start:"2026-09-15",due:"2026-09-25",priority:"Low"},
-{id:"BQ-31",phase:"BQ",category:"Marketing for Boutique Launch",task:"Opening week promotions & offers",owner:"Web/Marketing",start:"2026-09-20",due:"2026-10-01",priority:"Medium"},
-{id:"BQ-32",phase:"BQ",category:"Marketing for Boutique Launch",task:"Social media countdown & teaser campaign for boutique",owner:"Web/Marketing",start:"2026-09-15",due:"2026-09-30",priority:"Medium"},
+{id:"BQ-08",phase:"BQ",category:"Store Design & Fit-Out",task:"Finalize interior design concept & mood board (incl. scent/perfume bar)",owner:"Founder",start:"2026-08-10",due:"2026-08-17",priority:"High"},
+{id:"BQ-09",phase:"BQ",category:"Store Design & Fit-Out",task:"Get fit-out quotes from 3 licensed contractors",owner:"Founder",start:"2026-08-12",due:"2026-08-19",priority:"High"},
+{id:"BQ-10",phase:"BQ",category:"Store Design & Fit-Out",task:"Select contractor & sign fit-out contract (verify Lombard contractor registration)",owner:"Founder",start:"2026-08-19",due:"2026-08-22",priority:"High"},
+{id:"BQ-11",phase:"BQ",category:"Store Design & Fit-Out",task:"Fit-out construction: flooring, walls, lighting",owner:"Retail Ops",start:"2026-08-25",due:"2026-09-10",priority:"High"},
+{id:"BQ-12",phase:"BQ",category:"Store Design & Fit-Out",task:"Install fixtures: clothing racks, perfume counter, oud bar",owner:"Retail Ops",start:"2026-09-08",due:"2026-09-18",priority:"High"},
+{id:"BQ-13",phase:"BQ",category:"Store Design & Fit-Out",task:"Signage design (Arabic/English) & Village approval",owner:"Web/Marketing",start:"2026-09-01",due:"2026-09-10",priority:"Medium"},
+{id:"BQ-14",phase:"BQ",category:"Store Design & Fit-Out",task:"Signage manufacturing & installation",owner:"Retail Ops",start:"2026-09-10",due:"2026-09-22",priority:"Medium"},
+{id:"BQ-15",phase:"BQ",category:"Store Design & Fit-Out",task:"Furniture, mirrors, seating & décor procurement",owner:"Retail Ops",start:"2026-08-25",due:"2026-09-15",priority:"Medium"},
+{id:"BQ-16",phase:"BQ",category:"Store Design & Fit-Out",task:"Store lighting & scent-diffusion ambiance setup",owner:"Retail Ops",start:"2026-09-10",due:"2026-09-20",priority:"Low"},
 
-{id:"BQ-33",phase:"BQ",category:"Go-Live",task:"Final store walkthrough & compliance check",owner:"Founder",start:"2026-09-28",due:"2026-09-29",priority:"High"},
-{id:"BQ-34",phase:"BQ",category:"Go-Live",task:"Soft opening (friends/family/VIPs)",owner:"Founder",start:"2026-09-30",due:"2026-09-30",priority:"Medium"},
-{id:"BQ-35",phase:"BQ",category:"Go-Live",task:"Grand opening",owner:"Founder",start:"2026-10-01",due:"2026-10-01",priority:"High"},
+{id:"BQ-17",phase:"BQ",category:"Inventory & Operations",task:"Place larger in-store inventory order",owner:"Procurement",start:"2026-09-01",due:"2026-09-15",priority:"High"},
+{id:"BQ-18",phase:"BQ",category:"Inventory & Operations",task:"Receive & QC in-store inventory",owner:"Procurement",start:"2026-09-15",due:"2026-09-22",priority:"High"},
+{id:"BQ-19",phase:"BQ",category:"Inventory & Operations",task:"Select & install in-store POS system with IL tax rates configured",owner:"Retail Ops",start:"2026-09-05",due:"2026-09-15",priority:"High"},
+{id:"BQ-20",phase:"BQ",category:"Inventory & Operations",task:"Sync inventory system between store & e-commerce",owner:"Web/Marketing",start:"2026-09-10",due:"2026-09-20",priority:"Medium"},
+{id:"BQ-21",phase:"BQ",category:"Inventory & Operations",task:"Write store operations manual / SOPs",owner:"Founder",start:"2026-09-10",due:"2026-09-20",priority:"Medium"},
+{id:"BQ-22",phase:"BQ",category:"Inventory & Operations",task:"Set up security (CCTV, alarm, tagging)",owner:"Retail Ops",start:"2026-09-10",due:"2026-09-24",priority:"Medium"},
+{id:"BQ-23",phase:"BQ",category:"Inventory & Operations",task:"Set up store WiFi & back-office systems",owner:"Retail Ops",start:"2026-09-15",due:"2026-09-22",priority:"Low"},
+
+{id:"BQ-24",phase:"BQ",category:"Staffing",task:"Define roles: store manager, sales associates",owner:"Founder",start:"2026-08-20",due:"2026-08-26",priority:"High"},
+{id:"BQ-25",phase:"BQ",category:"Staffing",task:"Set up payroll, workers' comp insurance & IL new-hire reporting",owner:"Founder",start:"2026-08-26",due:"2026-09-12",priority:"High"},
+{id:"BQ-26",phase:"BQ",category:"Staffing",task:"Recruit & interview store staff",owner:"Founder",start:"2026-08-26",due:"2026-09-15",priority:"High"},
+{id:"BQ-27",phase:"BQ",category:"Staffing",task:"Hire & onboard store manager (I-9, W-4, offer letter)",owner:"Founder",start:"2026-09-05",due:"2026-09-15",priority:"High"},
+{id:"BQ-28",phase:"BQ",category:"Staffing",task:"Hire & onboard sales associates",owner:"Founder",start:"2026-09-10",due:"2026-09-20",priority:"High"},
+{id:"BQ-29",phase:"BQ",category:"Staffing",task:"Staff product training (fabrics, oud/attar knowledge, fragrance families)",owner:"Founder",start:"2026-09-20",due:"2026-09-27",priority:"High"},
+{id:"BQ-30",phase:"BQ",category:"Staffing",task:"Customer service & POS training",owner:"Retail Ops",start:"2026-09-22",due:"2026-09-28",priority:"Medium"},
+{id:"BQ-31",phase:"BQ",category:"Staffing",task:"Order staff uniforms",owner:"Retail Ops",start:"2026-09-10",due:"2026-09-25",priority:"Low"},
+
+{id:"BQ-32",phase:"BQ",category:"Marketing for Boutique Launch",task:"Local marketing plan (DuPage County outreach, community partnerships)",owner:"Web/Marketing",start:"2026-09-01",due:"2026-09-20",priority:"Medium"},
+{id:"BQ-33",phase:"BQ",category:"Marketing for Boutique Launch",task:"Plan grand opening event (guest list, catering, entertainment)",owner:"Web/Marketing",start:"2026-09-05",due:"2026-09-25",priority:"Medium"},
+{id:"BQ-34",phase:"BQ",category:"Marketing for Boutique Launch",task:"Press & media invitations (local Chicago-area outlets)",owner:"Web/Marketing",start:"2026-09-15",due:"2026-09-25",priority:"Low"},
+{id:"BQ-35",phase:"BQ",category:"Marketing for Boutique Launch",task:"Opening week promotions & offers",owner:"Web/Marketing",start:"2026-09-20",due:"2026-10-01",priority:"Medium"},
+{id:"BQ-36",phase:"BQ",category:"Marketing for Boutique Launch",task:"Social media countdown & teaser campaign for boutique",owner:"Web/Marketing",start:"2026-09-15",due:"2026-09-30",priority:"Medium"},
+
+{id:"BQ-37",phase:"BQ",category:"Go-Live",task:"Final store walkthrough & compliance check",owner:"Founder",start:"2026-09-28",due:"2026-09-29",priority:"High"},
+{id:"BQ-38",phase:"BQ",category:"Go-Live",task:"Soft opening (friends/family/VIPs)",owner:"Founder",start:"2026-09-30",due:"2026-09-30",priority:"Medium"},
+{id:"BQ-39",phase:"BQ",category:"Go-Live",task:"Grand opening",owner:"Founder",start:"2026-10-01",due:"2026-10-01",priority:"High"},
 ];
 
-const STORE_KEY = "naj_tracker_state_v1";
+const PHASES = [
+  {key:"LE", label:"Legal & Entity Setup", short:"Legal", due:"2026-08-20", dueLabel:"20 Aug 2026"},
+  {key:"EC", label:"E-commerce Launch",    short:"E-comm", due:"2026-08-25", dueLabel:"25 Aug 2026"},
+  {key:"BQ", label:"Boutique Opening",     short:"Boutique", due:"2026-10-01", dueLabel:"1 Oct 2026"}
+];
+
+const STORE_KEY = "naj_tracker_state_v2";
 const DEFAULT_STATUS = "Not Started";
 
 function loadState(){
@@ -427,8 +460,8 @@ function loadState(){
     return JSON.parse(localStorage.getItem(STORE_KEY)) || {};
   }catch(e){ return {}; }
 }
-function saveState(state){
-  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+function saveState(s){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(e){}
 }
 let state = loadState();
 
@@ -447,47 +480,50 @@ function setTaskState(id, patch){
 
 function todayISO(){
   const d = new Date();
-  return d.toISOString().slice(0,10);
+  const off = d.getTimezoneOffset();
+  return new Date(d.getTime() - off*60000).toISOString().slice(0,10);
 }
 function daysBetween(a,b){
   const A = new Date(a+"T00:00:00");
   const B = new Date(b+"T00:00:00");
   return Math.round((B-A)/86400000);
 }
+function escapeAttr(s){
+  return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+function escapeHtml(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
 
 function renderCountdowns(){
   const today = todayISO();
-  const ecDue = "2026-08-25";
-  const bqDue = "2026-10-01";
-  const start = "2026-08-05";
-
-  const ecTasks = TASKS.filter(t=>t.phase==="EC");
-  const bqTasks = TASKS.filter(t=>t.phase==="BQ");
-  const ecDone = ecTasks.filter(t=>getTaskState(t.id,t).status==="Done").length;
-  const bqDone = bqTasks.filter(t=>getTaskState(t.id,t).status==="Done").length;
-  const ecPct = Math.round(100*ecDone/ecTasks.length);
-  const bqPct = Math.round(100*bqDone/bqTasks.length);
-
-  const ecDays = daysBetween(today, ecDue);
-  const bqDays = daysBetween(today, bqDue);
-
-  const html = `
-    <div class="cd-card">
-      <div class="label">E-commerce Launch</div>
-      <div class="days">${ecDays >= 0 ? ecDays + ' days left' : Math.abs(ecDays) + ' days overdue'}</div>
-      <div class="date">Target: 25 Aug 2026</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${ecPct}%"></div></div>
-      <div class="pct">${ecDone}/${ecTasks.length} tasks done (${ecPct}%)</div>
-    </div>
-    <div class="cd-card">
-      <div class="label">Boutique Grand Opening</div>
-      <div class="days">${bqDays >= 0 ? bqDays + ' days left' : Math.abs(bqDays) + ' days overdue'}</div>
-      <div class="date">Target: 1 Oct 2026</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${bqPct}%"></div></div>
-      <div class="pct">${bqDone}/${bqTasks.length} tasks done (${bqPct}%)</div>
-    </div>
-  `;
+  const html = PHASES.map(p=>{
+    const list = TASKS.filter(t=>t.phase===p.key);
+    const done = list.filter(t=>getTaskState(t.id,t).status==="Done").length;
+    const pct = list.length ? Math.round(100*done/list.length) : 0;
+    const days = daysBetween(today, p.due);
+    const daysText = days > 0 ? days + ' days left'
+                   : days === 0 ? 'Due today'
+                   : Math.abs(days) + ' days overdue';
+    return `
+      <div class="cd-card">
+        <div class="label">${p.label}</div>
+        <div class="days">${daysText}</div>
+        <div class="date">Target: ${p.dueLabel}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+        <div class="pct">${done}/${list.length} tasks done (${pct}%)</div>
+      </div>`;
+  }).join("");
   document.getElementById("countdowns").innerHTML = html;
+}
+
+function phaseShort(key){
+  const p = PHASES.find(x=>x.key===key);
+  return p ? p.short : key;
+}
+function phaseLabel(key){
+  const p = PHASES.find(x=>x.key===key);
+  return p ? p.label : key;
 }
 
 function populateFilters(){
@@ -519,11 +555,11 @@ function currentFilters(){
 }
 
 function renderSummary(filtered){
+  const today = todayISO();
   const total = filtered.length;
   const done = filtered.filter(t=>getTaskState(t.id,t).status==="Done").length;
   const inProg = filtered.filter(t=>getTaskState(t.id,t).status==="In Progress").length;
   const blocked = filtered.filter(t=>getTaskState(t.id,t).status==="Blocked").length;
-  const today = todayISO();
   const overdue = filtered.filter(t=>{
     const st = getTaskState(t.id,t).status;
     return st!=="Done" && t.due < today;
@@ -546,7 +582,7 @@ function render(){
   const f = currentFilters();
   const today = todayISO();
 
-  let filtered = TASKS.filter(t=>{
+  const filtered = TASKS.filter(t=>{
     const ts = getTaskState(t.id, t);
     if(f.phase!=="all" && t.phase!==f.phase) return false;
     if(f.category!=="all" && t.category!==f.category) return false;
@@ -568,7 +604,7 @@ function render(){
   tbody.innerHTML = "";
 
   let lastGroupKey = null;
-  const groupByCategory = f.phase !== "all" || f.category !== "all" ? false : true;
+  const groupByCategory = (f.phase === "all" && f.category === "all");
 
   filtered.forEach(t=>{
     const ts = getTaskState(t.id, t);
@@ -576,7 +612,7 @@ function render(){
     if(groupByCategory && groupKey !== lastGroupKey){
       const gtr = document.createElement("tr");
       gtr.className = "cat-group-row";
-      gtr.innerHTML = `<td colspan="10">${t.phase==="EC"?"E-commerce":"Boutique"} — ${t.category}</td>`;
+      gtr.innerHTML = `<td colspan="10">${escapeHtml(phaseLabel(t.phase))} — ${escapeHtml(t.category)}</td>`;
       tbody.appendChild(gtr);
       lastGroupKey = groupKey;
     }
@@ -591,9 +627,9 @@ function render(){
     tr.innerHTML = `
       <td><input type="checkbox" ${isDone?"checked":""} data-id="${t.id}" class="chk-done"></td>
       <td>${t.id}</td>
-      <td><span class="badge ${t.phase==='EC'?'ec':'bq'}">${t.phase==='EC'?'E-comm':'Boutique'}</span></td>
-      <td class="task-cell"><div class="task-name">${t.task}</div><div class="task-id">${t.category}</div></td>
-      <td><input type="text" class="owner-input" data-id="${t.id}" value="${ts.owner.replace(/"/g,'&quot;')}"></td>
+      <td><span class="badge ${t.phase.toLowerCase()}">${escapeHtml(phaseShort(t.phase))}</span></td>
+      <td class="task-cell"><div class="task-name">${escapeHtml(t.task)}</div><div class="task-id">${escapeHtml(t.category)}</div></td>
+      <td><input type="text" class="owner-input" data-id="${t.id}" value="${escapeAttr(ts.owner)}"></td>
       <td>${fmtDate(t.start)}</td>
       <td>${fmtDate(t.due)}</td>
       <td><span class="badge prio-${t.priority}">${t.priority}</span></td>
@@ -605,39 +641,34 @@ function render(){
           <option ${ts.status==="Blocked"?"selected":""}>Blocked</option>
         </select>
       </td>
-      <td><input type="text" class="notes-input" data-id="${t.id}" placeholder="add note..." value="${ts.notes.replace(/"/g,'&quot;')}"></td>
+      <td><input type="text" class="notes-input" data-id="${t.id}" placeholder="add note..." value="${escapeAttr(ts.notes)}"></td>
     `;
     tbody.appendChild(tr);
   });
 
-  // wire events
   tbody.querySelectorAll(".chk-done").forEach(cb=>{
     cb.addEventListener("change", e=>{
-      const id = e.target.dataset.id;
-      setTaskState(id, {status: e.target.checked ? "Done" : "Not Started"});
+      setTaskState(e.target.dataset.id, {status: e.target.checked ? "Done" : "Not Started"});
       render();
       renderCountdowns();
     });
   });
   tbody.querySelectorAll(".status-select").forEach(sel=>{
     sel.addEventListener("change", e=>{
-      const id = e.target.dataset.id;
-      setTaskState(id, {status: e.target.value});
+      setTaskState(e.target.dataset.id, {status: e.target.value});
       render();
       renderCountdowns();
     });
   });
   tbody.querySelectorAll(".owner-input").forEach(inp=>{
     inp.addEventListener("change", e=>{
-      const id = e.target.dataset.id;
-      setTaskState(id, {owner: e.target.value});
+      setTaskState(e.target.dataset.id, {owner: e.target.value});
       render();
     });
   });
   tbody.querySelectorAll(".notes-input").forEach(inp=>{
     inp.addEventListener("change", e=>{
-      const id = e.target.dataset.id;
-      setTaskState(id, {notes: e.target.value});
+      setTaskState(e.target.dataset.id, {notes: e.target.value});
     });
   });
 }
@@ -646,7 +677,7 @@ function exportCSV(){
   const rows = [["ID","Phase","Category","Task","Owner","Start","Due","Priority","Status","Notes"]];
   TASKS.forEach(t=>{
     const ts = getTaskState(t.id, t);
-    rows.push([t.id, t.phase==='EC'?'E-commerce':'Boutique', t.category, t.task, ts.owner, t.start, t.due, t.priority, ts.status, ts.notes]);
+    rows.push([t.id, phaseLabel(t.phase), t.category, t.task, ts.owner, t.start, t.due, t.priority, ts.status, ts.notes]);
   });
   const csv = rows.map(r=> r.map(v=>{
     const s = String(v).replace(/"/g,'""');
