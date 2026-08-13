@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Naseer Al Jadidi — Catalog Builder</title>
+<style>
+  :root{
+    --ink:#15211d; --ink-2:#4a5b55; --ink-3:#8a9994;
+    --paper:#f6f4ef; --card:#ffffff;
+    --green:#1c3d34; --green-2:#2a5a4c;
+    --gold:#a8813f; --gold-soft:#f6efe1;
+    --line:#e4e1d9; --line-2:#f0ede6;
+    --red:#9b3232; --red-soft:#fbeaea;
+    --blue:#2e5c86;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+    background:var(--paper);color:var(--ink);font-size:14px;line-height:1.5;padding:0 0 90px}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 22px}
+
+  header{background:var(--green);color:#fff;padding:24px 0 20px;margin-bottom:18px;border-bottom:3px solid var(--gold)}
+  .brand{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  h1{font-family:Georgia,serif;font-size:24px;font-weight:600}
+  .brand .sub{color:#a9c2b8;font-size:12px;letter-spacing:.09em;text-transform:uppercase}
+  .stats{display:flex;gap:24px;margin-top:15px;flex-wrap:wrap}
+  .stat .n{font-family:Georgia,serif;font-size:25px;line-height:1}
+  .stat .n.gold{color:#e3bd7c}
+  .stat .l{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:#9fb8ae;margin-top:4px}
+
+  .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .toolbar .spacer{flex:1}
+  button{font:inherit;font-size:13px;cursor:pointer;border-radius:7px;border:1px solid var(--line);
+    background:var(--card);color:var(--ink);padding:7px 13px;transition:.12s}
+  button:hover{border-color:var(--ink-3)}
+  button.primary{background:var(--green);color:#fff;border-color:var(--green)}
+  button.primary:hover{background:var(--green-2)}
+  button.tiny{padding:3px 9px;font-size:11.5px}
+  button.danger{color:var(--red);border-color:#e6c9c9}
+  button.danger:hover{background:var(--red-soft);border-color:var(--red)}
+  .switch{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-2);
+    background:var(--card);border:1px solid var(--line);border-radius:7px;padding:6px 12px}
+  .switch input{accent-color:var(--green);width:15px;height:15px;cursor:pointer}
+  .switch label{cursor:pointer;user-select:none}
+
+  /* status chip */
+  .sync{font-size:11.5px;display:flex;align-items:center;gap:6px;padding:6px 11px;white-space:nowrap;
+    border:1px solid var(--line);border-radius:7px;background:var(--card);color:#3f7a63}
+  .sync::before{content:'';width:7px;height:7px;border-radius:50%;background:#3f7a63;flex:none}
+  .sync.local{color:#9b6a1e} .sync.local::before{background:#c99a2e}
+  .sync.off{color:var(--red)} .sync.off::before{background:var(--red)}
+  .who{font-size:11.5px;color:var(--ink-2);display:flex;align-items:center;gap:7px;
+    border:1px solid var(--line);border-radius:7px;background:var(--card);padding:5px 11px}
+  .who input{font:inherit;font-size:12px;border:1px solid transparent;background:transparent;
+    border-radius:5px;padding:2px 5px;width:96px;color:var(--ink)}
+  .who input:hover{background:#f2f0ea}
+  .who input:focus{outline:none;background:#fff;border-color:var(--green)}
+  .avs{display:flex;gap:-4px}
+  .av{width:21px;height:21px;border-radius:50%;background:var(--blue);color:#fff;font-size:10px;
+    display:flex;align-items:center;justify-content:center;margin-left:-5px;border:2px solid #fff;font-weight:600}
+  .av:first-child{margin-left:0}
+
+  .sec{margin-bottom:18px;border-radius:11px;overflow:hidden;border:1px solid #d8d4ca;background:#fdfcfa}
+  .sec-head{display:flex;align-items:center;gap:11px;padding:14px 16px;
+    background:linear-gradient(180deg,#22463c,#1c3d34);color:#fff}
+  .sec-head .chev{color:#8fb0a5}
+  .sec-num{font-family:Georgia,serif;font-size:12.5px;color:#1c3d34;background:#e3bd7c;
+    width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
+  input.sec-name{font-family:Georgia,serif;font-size:18px;font-weight:600;color:#fff;
+    border:1px solid transparent;background:transparent;padding:4px 8px;border-radius:6px;flex:1;min-width:60px}
+  input.sec-name::placeholder{color:#7fa295}
+  input.sec-name:hover{background:rgba(255,255,255,.09)}
+  input.sec-name:focus{outline:none;background:rgba(255,255,255,.14);border-color:#e3bd7c}
+  .sec-meta{font-size:11.5px;color:#a9c2b8;white-space:nowrap}
+  .sec-body{padding:12px 14px 14px}
+  .sec.collapsed .sec-body{display:none}
+  .sec.collapsed .chev span{transform:rotate(-90deg)}
+
+  .cat{background:var(--card);border:1px solid var(--line);border-radius:8px;margin-bottom:9px;overflow:hidden}
+  .cat-head{display:flex;align-items:center;gap:9px;padding:9px 12px;background:#fbfaf7;border-bottom:1px solid var(--line-2)}
+  .cat.collapsed .cat-head{border-bottom:none}
+  .cat.collapsed .chev span{transform:rotate(-90deg)}
+  .cat-bar{width:3px;height:17px;background:var(--gold);border-radius:2px;flex:none}
+  input.cat-name{font-size:14.5px;font-weight:600;border:1px solid transparent;background:transparent;
+    padding:4px 7px;border-radius:6px;flex:1;min-width:60px;color:var(--ink)}
+  input.cat-name:hover{background:#f1efe8}
+  input.cat-name:focus{outline:none;background:#fff;border-color:var(--green)}
+  .cat-count{font-size:11px;color:var(--ink-3);white-space:nowrap}
+
+  .chev{width:20px;height:20px;flex:none;border:none;background:transparent;color:var(--ink-3);
+    display:flex;align-items:center;justify-content:center;font-size:10px;padding:0}
+  .chev:hover{background:transparent;border:none}
+  .chev span{display:block;transition:.15s}
+
+  .lines{padding:2px 12px 11px}
+  .lhead,.lrow{display:grid;align-items:center;gap:8px}
+  .lhead{font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+    padding:8px 4px 5px;border-bottom:1px solid var(--line-2)}
+  .lrow{padding:3px 4px;border-bottom:1px solid #f5f3ee}
+  .lrow:last-child{border-bottom:none}
+  .lrow.pending{background:var(--red-soft);border-radius:6px}
+  .lrow.flash{animation:fl 1.1s ease-out}
+  @keyframes fl{0%{background:#dbeafe}100%{background:transparent}}
+
+  .g-basic{grid-template-columns:22px minmax(110px,1.05fr) minmax(130px,1.9fr) 112px 92px 58px}
+  .g-full{grid-template-columns:22px minmax(105px,1fr) 104px 84px minmax(96px,1fr) 74px 62px 74px 82px 58px}
+  .col-s2{display:none}
+  body.step2 .col-s2{display:block}
+  body.step2 .col-desc{display:none}
+
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--ink-3);margin-left:7px;flex:none;display:inline-block}
+  .dot.in{background:#2f7d5c} .dot.maybe{background:#c99a2e} .dot.out{background:#c5bfb5}
+
+  input.f,select.f{font:inherit;font-size:13px;width:100%;border:1px solid transparent;background:transparent;
+    color:var(--ink);padding:5px 7px;border-radius:6px}
+  input.f::placeholder{color:#c6c0b5}
+  input.f:hover,select.f:hover{background:#f4f2ec}
+  input.f:focus,select.f:focus{outline:none;background:#fff;border-color:var(--green)}
+  input.f.muted{color:var(--ink-2);font-size:12.5px}
+  input.f.num{text-align:right;font-variant-numeric:tabular-nums}
+  select.f{cursor:pointer;-webkit-appearance:none;appearance:none;
+    background-image:linear-gradient(45deg,transparent 50%,#9a948a 50%),linear-gradient(135deg,#9a948a 50%,transparent 50%);
+    background-position:calc(100% - 12px) 12px,calc(100% - 7px) 12px;background-size:5px 5px,5px 5px;
+    background-repeat:no-repeat;padding-right:22px}
+  .calc{text-align:right;font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--ink-2);padding-right:7px}
+  .calc b{color:var(--ink);font-weight:600}
+
+  .rowacts{display:flex;gap:1px;justify-content:flex-end;opacity:.22;transition:.12s}
+  .lrow:hover .rowacts,.cat-head:hover .rowacts,.sec-head:hover .rowacts{opacity:1}
+  .sec-head .rowacts{opacity:.5}
+  .iconbtn{border:none;background:transparent;color:var(--ink-3);padding:3px 5px;font-size:11px;border-radius:5px;line-height:1}
+  .iconbtn:hover{background:#ece9e2;color:var(--ink);border:none}
+  .iconbtn.x:hover{background:var(--red-soft);color:var(--red)}
+  .sec-head .iconbtn{color:#8fb0a5}
+  .sec-head .iconbtn:hover{background:rgba(255,255,255,.15);color:#fff}
+  .addbtns{margin-top:8px;display:flex;gap:7px}
+
+  .flag{background:var(--gold-soft);border-left:3px solid var(--gold);padding:10px 13px;
+    border-radius:0 7px 7px 0;font-size:12.5px;color:#6a5326;margin:9px 0 3px}
+  .flag b{color:#4a3818}
+  .flag.warn{background:var(--red-soft);border-left-color:var(--red);color:#7b3232}
+  .flag.warn b{color:#5e2020}
+
+  .banner{background:#fff;border:1px solid var(--line);border-left:3px solid var(--gold);
+    border-radius:0 9px 9px 0;padding:12px 16px;margin-bottom:14px;font-size:12.5px;color:var(--ink-2);
+    display:flex;gap:14px;align-items:flex-start}
+  .banner b{color:var(--ink)}
+  .banner.setup{border-left-color:var(--blue);background:#f4f8fc;color:#2c4a68}
+  .banner.setup b{color:#1d3352}
+  .banner .x{flex:none;border:none;background:transparent;color:var(--ink-3);padding:2px 6px;font-size:13px;border-radius:5px}
+  .banner .x:hover{background:#ece9e2;color:var(--ink);border:none}
+
+  .budget{display:none;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:15px 18px;margin-bottom:16px}
+  body.step2 .budget{display:block}
+  .budget-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+  .budget-top .big{font-family:Georgia,serif;font-size:23px}
+  .budget-top .of{color:var(--ink-3);font-size:13px}
+  .budget-top input{width:100px;font:inherit;font-size:13px;text-align:right;border:1px solid var(--line);
+    border-radius:6px;padding:4px 8px;background:#fbfaf7}
+  .bar{height:9px;background:#eeebe4;border-radius:5px;overflow:hidden}
+  .bar>i{display:block;height:100%;background:var(--green);transition:.25s}
+  .bar>i.over{background:var(--red)}
+  .budget .sub{font-size:12px;color:var(--ink-2);margin-top:8px}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:16px}
+  .panel h3{font-family:Georgia,serif;font-size:15px;margin-bottom:8px;margin-top:4px}
+  .panel h3:first-child{margin-top:0}
+  .panel p{font-size:12.5px;color:var(--ink-2);margin-bottom:11px}
+  .panel ol{font-size:12.5px;color:var(--ink-2);margin:0 0 12px 18px}
+  .panel ol li{margin-bottom:5px}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;background:#f1efe9;padding:1px 5px;border-radius:4px}
+  textarea{width:100%;height:130px;font-family:ui-monospace,Menlo,monospace;font-size:11px;
+    border:1px solid var(--line);border-radius:7px;padding:10px;background:#fbfaf7;color:var(--ink-2);resize:vertical}
+  textarea:focus{outline:none;border-color:var(--green);background:#fff}
+  .hidden{display:none}
+  .note{font-size:11.5px;color:var(--ink-3);margin-top:9px}
+  /* auth + branch */
+  .authbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;
+    background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+  .authbar .spacer{flex:1}
+  .authbar input{font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:6px;
+    padding:6px 9px;width:170px;background:#fbfaf7}
+  .authbar input:focus{outline:none;border-color:var(--green);background:#fff}
+  .role{font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:20px;
+    background:var(--green-soft,#e8efeb);color:var(--green);font-weight:700}
+  .role.owner{background:#f6e7c8;color:#7a5a15}
+  .role.viewer{background:#eceae4;color:var(--ink-3)}
+  .uemail{font-size:12.5px;color:var(--ink-2)}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{border:none;border-radius:0;padding:6px 14px;font-size:12.5px;background:#fff;color:var(--ink-2)}
+  .seg button+button{border-left:1px solid var(--line)}
+  .seg button.on{background:var(--green);color:#fff}
+  .seg button:hover:not(.on){background:#f1efe9}
+  .rolock{font-size:12px;color:#7a5a15;background:var(--gold-soft);border:1px solid #ecd9b4;
+    border-radius:7px;padding:6px 11px;display:flex;align-items:center;gap:6px}
+  .autherr{font-size:12px;color:var(--red);padding:0 4px}
+  body.ro .rowacts,body.ro .addbtns{display:none!important}
+  body.ro input.f,body.ro select.f,body.ro input.cat-name,body.ro input.sec-name{cursor:default}
+  body.ro input.f:hover,body.ro select.f:hover,body.ro input.cat-name:hover{background:transparent}
+
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-2);margin-bottom:15px;padding-left:2px}
+  .legend span{display:flex;align-items:center;gap:6px}
+
+  .hist{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:10px}
+  .hist div{display:flex;align-items:center;gap:10px;padding:7px 12px;font-size:12.5px;border-bottom:1px solid var(--line-2)}
+  .hist div:last-child{border-bottom:none}
+  .hist .t{color:var(--ink-2)} .hist .b{color:var(--ink-3);flex:1}
+
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;
+    padding:10px 20px;border-radius:8px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.2);
+    opacity:0;pointer-events:none;transition:.2s;z-index:50}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
+
+  @media print{
+    body{background:#fff;padding:0}
+    header{background:#fff;color:#000;border-bottom:2px solid #000}
+    h1,.stat .n{color:#000}.stat .l,.brand .sub{color:#555}
+    .sec-head{background:#eee;color:#000}input.sec-name{color:#000}.sec-meta{color:#555}
+    .toolbar,.rowacts,.addbtns,.panel,.chev,.legend,.banner{display:none!important}
+    .sec,.cat{break-inside:avoid}
+    input.f,select.f,input.cat-name{border-color:transparent!important;background:transparent!important}
+  }
+  @media(max-width:820px){
+    .g-basic{grid-template-columns:18px 1fr 88px 44px}
+    .g-basic .col-desc,.g-basic .col-ch{display:none}
+    .g-full{grid-template-columns:18px 1fr 66px 58px 74px 44px}
+    .g-full .col-ch,.g-full .col-st,.g-full .col-sup{display:none}
+    .stats{gap:16px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <h1>Naseer Al Jadidi</h1>
+      <div class="sub">Catalog Builder &nbsp;·&nbsp; Step 1</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="n" id="s-sec">0</div><div class="l">Sections</div></div>
+      <div class="stat"><div class="n" id="s-cat">0</div><div class="l">Categories</div></div>
+      <div class="stat"><div class="n" id="s-line">0</div><div class="l">Style lines</div></div>
+      <div class="stat"><div class="n gold" id="s-in">0</div><div class="l">In</div></div>
+      <div class="stat"><div class="n" id="s-maybe">0</div><div class="l">Undecided</div></div>
+      <div class="stat"><div class="n" id="s-out">0</div><div class="l">Out</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="authbar" id="authbar" style="display:none">
+    <div class="seg" id="branchseg">
+      <button id="seg-master" class="on" onclick="setBranch('master')">Master</button>
+      <button id="seg-draft" onclick="setBranch('draft')">Draft</button>
+    </div>
+    <div class="rolock" id="rolock" style="display:none">Read-only</div>
+    <button id="btn-publish" style="display:none" onclick="publish()">Publish draft &rarr; master</button>
+    <button id="btn-pull" style="display:none" onclick="pullMaster()">Reset draft from master</button>
+    <div class="spacer"></div>
+    <span id="signedout">
+      <input id="au-email" type="email" placeholder="email" autocomplete="username">
+      <input id="au-pass" type="password" placeholder="password" autocomplete="current-password">
+      <button class="primary" onclick="signIn()">Sign in</button>
+    </span>
+    <span id="signedin" style="display:none">
+      <span class="role" id="rolebadge">viewer</span>
+      <span class="uemail" id="useremail"></span>
+      <button onclick="signOutNow()">Sign out</button>
+    </span>
+    <span class="autherr" id="autherr"></span>
+  </div>
+
+  <div class="banner" id="banner">
+    <div id="banner-text"></div>
+    <button class="x" title="Dismiss" onclick="document.getElementById('banner').remove()">&#10005;</button>
+  </div>
+
+  <div class="toolbar">
+    <button class="primary" onclick="addSec()">+ Add section</button>
+    <button onclick="expandAll(true)">Expand all</button>
+    <button onclick="expandAll(false)">Collapse all</button>
+    <div class="sync" id="sync">Connecting…</div>
+    <div class="who" id="who">
+      <span>You:</span><input id="myname" placeholder="your name" oninput="setName(this.value)">
+      <div class="avs" id="avs"></div>
+    </div>
+    <div class="spacer"></div>
+    <div class="switch">
+      <input type="checkbox" id="s2" onchange="toggleStep2()">
+      <label for="s2">Supplier &amp; pricing mode</label>
+    </div>
+    <button onclick="window.print()">Print</button>
+    <button onclick="togglePanel()">Save / Load</button>
+  </div>
+
+  <div class="budget">
+    <div class="budget-top">
+      <div class="big" id="b-spent">$0</div><div class="of">of</div>
+      <div><input id="b-total" type="number" value="30000" oninput="setBudget(this.value)"></div>
+      <div class="of">inventory budget</div><div style="flex:1"></div>
+      <div class="of" id="b-left">—</div>
+    </div>
+    <div class="bar"><i id="b-bar" style="width:0%"></i></div>
+    <div class="sub">Fill in unit cost and units on each line. Only lines marked <b>In</b> are counted.</div>
+  </div>
+
+  <div class="legend">
+    <span><i class="dot in" style="margin:0"></i> In — carrying at launch</span>
+    <span><i class="dot maybe" style="margin:0"></i> Undecided</span>
+    <span><i class="dot out" style="margin:0"></i> Out</span>
+  </div>
+
+  <div id="panel" class="panel hidden">
+    <h3>Backup &amp; export</h3>
+    <p id="panel-mode"></p>
+    <div class="toolbar" style="margin-bottom:12px">
+      <button class="primary" onclick="download('json')">Download data file</button>
+      <button onclick="download('csv')">Download CSV (Excel)</button>
+      <button onclick="copyJSON()">Copy to clipboard</button>
+      <div class="spacer"></div>
+      <button onclick="loadJSON()">Load from text below</button>
+      <button id="resetbtn" onclick="reset()">Reset to original list</button>
+    </div>
+    <textarea id="io" spellcheck="false"></textarea>
+
+    <div id="histwrap" class="hidden">
+      <h3>Version history</h3>
+      <p>Automatic snapshots taken when someone adds or deletes something. Restoring replaces the shared list for everyone.</p>
+      <div class="hist" id="hist"></div>
+    </div>
+  </div>
+
+  <div id="secs"></div>
+
+  <div class="toolbar" style="margin-top:16px">
+    <button class="primary" onclick="addSec()">+ Add section</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ============================================================
+     SHARED-EDITING SETUP  —  paste your Firebase values below.
+     Leave blank and the page works exactly as before (private
+     copy saved in your own browser).
+     ============================================================ -->
+<script>
+window.FIREBASE_CONFIG = {
+  apiKey:      "AIzaSyAdPMcrIuKIMYHNcR1Zdk8xEHfyHgQQju0",
+  authDomain:  "al-jadidi-catalog-4b3db.firebaseapp.com",
+  databaseURL: "https://al-jadidi-catalog-4b3db-default-rtdb.firebaseio.com",
+  projectId:   "al-jadidi-catalog-4b3db",
+  appId:       "1:643692452045:web:1761dfdbfa5f0400db7184"
+};
+window.ROOM = "naseer-catalog";
+</script>
+
+<script type="module">
+  const cfg = window.FIREBASE_CONFIG || {};
+  if (cfg.databaseURL && cfg.apiKey) {
+    try{
+      const [{ initializeApp }, dbmod, authmod] = await Promise.all([
+        import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+        import("https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"),
+        import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js")
+      ]);
+      window.FB = { app: initializeApp(cfg), ...dbmod, ...authmod };
+    }catch(e){ window.FB_ERR = e.message; }
+  }
+  window.dispatchEvent(new Event('fbready'));
+</script>
+
+<script>
+/* ================= seed data ================= */
+let uid=1; const nid=()=>'x'+(uid++);
+const L=(name,desc,ch,st)=>({id:nid(),name,desc:desc||'',ch:ch||'both',st:st||'in',sup:'',cost:'',units:'',retail:''});
+const C=(name,lines,flag)=>({id:nid(),name,open:true,flag:flag||'',lines});
+const S=(name,cats,flag,fw)=>({id:nid(),name,open:true,flag:flag||'',flagWarn:!!fw,cats});
+
+let data={ budget:30000, sections:[
+ S("Clothing",[
+   C("Men's Thobes",[
+     L("Saudi","Classic collar. Summer + winter weights. Volume driver.","store"),
+     L("Emirati (Kandura)","Round collar with tarboosh tassel.","store"),
+     L("Omani (Dishdasha)","Furakha tassel at the neck.","store"),
+     L("Moroccan","Embroidered thobe / djellaba / jabador.","store"),
+   ]),
+   C("Kids' Thobes",[
+     L("Saudi — kids","Eid-driven. Families buy matching with the father.","store"),
+     L("Emirati — kids","","store"),
+     L("Moroccan — kids","Embroidered, gift-friendly.","store"),
+     L("Colour / casual — kids","Beige, grey, navy. Non-Eid wear.","store"),
+   ]),
+   C("Headwear",[
+     L("Kufi","Cotton, crochet, embroidered, wool.","both"),
+     L("Imamah","","both"),
+     L("Shemagh / Ghutra","White, red-check, plain summer.","both"),
+     L("Igal","","both"),
+   ],"Highest attach rate to a thobe sale. This is your average-ticket lever — merchandise it at the till, not the back wall."),
+   C("Innerwear & Base",[
+     L("Fanila (undershirt)","Quiet, steady repeat purchase.","both"),
+     L("Serwal (under-trouser)","","both"),
+   ]),
+   C("Women's",[
+     L("Abaya","Classic black, embroidered, open-front, crepe.","both","maybe"),
+     L("Shayla / Hijab","Pairs with the abaya sale.","both","maybe"),
+   ],"Abayas put you head-to-head with the one Lombard competitor, who is women's-focused. Everywhere else you have a 45-minute moat."),
+   C("Outerwear / Premium",[
+     L("Bisht","$150–800 cost each. Display sample + special order is the alternative.","store","out"),
+     L("Farwa / winter cloak","Very narrow season.","store","out"),
+   ]),
+ ]),
+ S("Footwear",[
+   C("Arabic Sandals (Madas)",[
+     L("Leather madas — Saudi style","","store"),
+     L("Leather madas — Emirati style","","store"),
+     L("Casual / summer sandal","","store"),
+   ]),
+   C("Khuff & Indoor",[
+     L("Leather khuff (masah)","Niche but almost no local competition.","both"),
+     L("Indoor slippers","","store"),
+   ]),
+   C("Kids' Footwear",[ L("Kids' sandals","","store","maybe") ]),
+ ],"<b>New section — cost it before committing.</b> Footwear carries a full size matrix (7–13 = 7+ pairs per style just to open), so it eats budget far faster per style line than anything else here. It pairs beautifully with a thobe sale; it is also the easiest place in this catalog to strand $6,000. Consider launching with two sandal styles only and widening once you know the demand.",true),
+ S("Oud Oils",[
+   C("Pure Dehn Al Oud",[
+     L("Cambodi","","both"), L("Hindi","","both"), L("Maroki","","both"), L("Salla","","both"),
+   ]),
+   C("Oud Blends",[
+     L("Oud Muattar","","both"), L("Oud + Rose","","both"), L("Oud + Musk","","both"), L("Oud + Amber","","both"),
+   ]),
+   C("House Oud",[
+     L("Private-label signature oud","Your own name on the bottle. Best long-term margin and nobody can price-match it.","both","maybe"),
+   ]),
+ ],"<b>~72% margin, ships as an ordinary parcel, and repeats.</b> This is the single best economic category in the store and the real differentiator against Amazon. Weight the online catalog here."),
+ S("Attars",[
+   C("Musk",[ L("White musk","","both"), L("Musk Tahara","","both"), L("Musk Al Ghazal","","both"),
+     L("Black musk","","both"), L("Musk Amber","","both") ]),
+   C("Floral",[ L("Taif Rose","","both"), L("Jasmine / Full","","both"), L("Saffron / Zafran","","both") ]),
+   C("Woody & Amber",[ L("Amber","","both"), L("Sandal","","both"), L("Bakhoor attar","","both") ]),
+   C("Khaleeji Blends",[ L("House blend — signature","","both"), L("House blend — seasonal","","both") ]),
+ ]),
+ S("Designer Duped Fragrance Oils & Perfumes",[
+   C("Duped Oils (roll-on)",[ L("Woody / aromatic dupes","","both"), L("Sweet / gourmand dupes","","both"),
+     L("Fresh / aquatic dupes","","both") ]),
+   C("Duped Sprays (EDP)",[ L("Woody / aromatic dupes","","store"), L("Sweet / gourmand dupes","","store"),
+     L("Fresh / aquatic dupes","","store") ]),
+ ],"<b>Legal exposure sits in this section, not the product.</b> How these are named and described on shelf tags, signage and listings is what draws cease-and-desist letters in this category. Get a specific attorney opinion — not a general one — before printing anything or going live online.",true),
+ S("Perfumes",[
+   C("Lattafa",[ L("Khamrah family","","store"), L("Asad / Fakhar family","","store"), L("Yara (women's)","","store") ]),
+   C("Al Haramain",[ L("Amber Oud line","","store"), L("Detour line","","store") ]),
+   C("Ajmal / Rasasi",[ L("Ajmal signature","","store"), L("Rasasi Hawas / La Yuqawam","","store") ]),
+   C("Swiss Arabian",[ L("Shaghaf","","store"), L("Layali","","store") ]),
+   C("ASAQ",[ L("ASAQ signature line","Wholesale outreach already in progress.","store") ]),
+   C("House / Private Label",[ L("Own-brand spray","Uncapped margin, no price comparison possible.","both","maybe") ]),
+ ],"Arabian house sprays — original compositions, not dupes. <b>Shipping constraint:</b> alcohol sprays are a DOT Class 3 flammable liquid — USPS ground only, 16 fl oz max per parcel, no air or international. This whole section is effectively store-only, which is why the shop and the webshop are two different catalogs."),
+ S("Designer Brand Perfumes",[
+   C("Men's Designer",[ L("Dior / Versace tier","","store","maybe"), L("YSL / Paco Rabanne tier","","store","maybe"),
+     L("Armani / Prada tier","","store","maybe") ]),
+   C("Women's Designer",[ L("Lancôme / Carolina Herrera tier","","store","maybe"), L("Chanel / Dior women's","","store","maybe") ]),
+   C("Niche / Luxury",[ L("Creed / Le Labo tier","Very high cost per unit.","store","out") ]),
+ ],"<b>The weakest economics in the catalog — decide deliberately.</b> Authentic Western designer runs roughly 20–30% margin against 72% on oud oils, ties up the most cash per bottle, and puts you in a straight price fight with Sephora, Ulta and online discounters who will always beat you. Grey-market sourcing improves the margin and brings authenticity and warranty risk with it. Everything here is marked <b>Undecided</b> on purpose.",true),
+ S("Bakhoor & Home Fragrance",[
+   C("Bakhoor",[ L("Economy box","","both"), L("Mid tin","","both"), L("Luxury tin","","both"),
+     L("Ramadan / Eid special","","both") ]),
+   C("Oud Chips & Wood",[ L("Standard grade","","both"), L("Super grade","","both") ]),
+   C("Burners (Mabkhara)",[ L("Electric USB","","both"), L("Traditional ceramic","","both"),
+     L("Decorative gift-grade","","both") ]),
+   C("Home & Car",[ L("Room spray","","store","maybe"), L("Car freshener / hanging","","both","maybe") ]),
+ ],"High repeat rate, low ticket, pure impulse. Belongs at the front near the register — a 14×89 box has a dead zone past 45 feet and nobody walks 80 feet for an impulse buy."),
+ S("Prayer & Islamic Goods",[
+   C("Prayer Mats",[ L("Economy","","both"), L("Padded","","both"), L("Memory foam","","both"),
+     L("Travel / pocket","","both") ]),
+   C("Tasbih",[ L("Wood","","both"), L("Stone / Aqeeq","","both"), L("Digital counter","","both") ]),
+   C("Sunnah Personal Care",[ L("Miswak","","both"), L("Kohl / Ithmid","","both","maybe"),
+     L("Halal personal care","","both","maybe") ]),
+   C("Hajj & Umrah",[ L("Ihram sets","Season spike.","both"), L("Travel kits","","both","maybe") ]),
+   C("Quran & Covers",[ L("Quran covers & pouches","","both") ]),
+ ],"Steady year-round demand from the Islamic Foundation crowd — one of the largest mosques in the US with a ~750-student school, five minutes away."),
+ S("Gift Sets & Bundles",[
+   C("Fragrance Gift Boxes",[ L("Attar trio box","","both"), L("Oud sampler","","both"),
+     L("Bakhoor + burner set","","both") ]),
+   C("Apparel Bundles",[ L("Eid bundle — thobe + kufi + attar","","store"),
+     L("Nikah / wedding premium box","","store") ]),
+   C("Prayer Gift Sets",[ L("Mat + tasbih set","","both") ]),
+ ],"Assembled from stock you already own — near-zero incremental inventory cost and the best margin in the store. The cheapest lever you have on average ticket during Ramadan and wedding season."),
+]};
+
+const DEFAULT=JSON.parse(JSON.stringify({budget:data.budget,sections:data.sections}));
+
+/* ================= shared state ================= */
+let db=null, R=null, FB=null, auth=null;
+let mode='local';                       // 'local' | 'shared'
+let path={}, parent={};                 // id -> db path / parent id
+let openState={};                       // id -> bool (local only)
+let myName=localStorage.getItem('naseer-name')||'';
+const CLIENT='c'+Math.random().toString(36).slice(2,9);
+let lastRemote='';
+let user=null, role='viewer', branch='master', canWrite=false, unsub=null;
+const ROOT = () => window.ROOM || 'naseer-catalog';
+const RO = () => (mode!=='shared' || canWrite) ? '' : ' disabled';
+
+const CH={both:"Store + Online",store:"Store only",online:"Online only"};
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const money=n=>'$'+Math.round(n).toLocaleString();
+const allLines=()=>data.sections.flatMap(s=>s.cats.flatMap(c=>c.lines));
+const lineVal=l=>(parseFloat(l.cost)||0)*(parseFloat(l.units)||0);
+
+/* ================= render ================= */
+function render(){
+  const step2=document.body.classList.contains('step2');
+  const g=step2?'g-full':'g-basic';
+  const foc=grabFocus();
+  let h='';
+
+  data.sections.forEach((s,si)=>{
+    const cats=s.cats.length, lines=s.cats.reduce((a,c)=>a+c.lines.length,0);
+    const val=s.cats.reduce((a,c)=>a+c.lines.filter(l=>l.st==='in').reduce((b,l)=>b+lineVal(l),0),0);
+    h+=`<div class="sec ${s.open?'':'collapsed'}" data-s="${s.id}">
+      <div class="sec-head">
+        <button class="chev" onclick="tog('${s.id}')"><span>&#9660;</span></button>
+        <div class="sec-num">${si+1}</div>
+        <input class="sec-name"${RO()} data-k="name" value="${esc(s.name)}" placeholder="Section name" oninput="setF('${s.id}','name',this.value)">
+        <div class="sec-meta">${cats} categor${cats===1?'y':'ies'} · ${lines} line${lines===1?'':'s'}${step2&&val?' · '+money(val):''}</div>
+        <div class="rowacts">
+          <button class="iconbtn" title="Move up" onclick="move('${s.id}',-1)">&#9650;</button>
+          <button class="iconbtn" title="Move down" onclick="move('${s.id}',1)">&#9660;</button>
+          <button class="iconbtn x" title="Delete section" onclick="del('${s.id}')">&#10005;</button>
+        </div>
+      </div>`;
+    if(s.open){
+      h+=`<div class="sec-body">`;
+      if(s.flag) h+=`<div class="flag ${s.flagWarn?'warn':''}">${s.flag}</div>`;
+      s.cats.forEach(c=>{
+        h+=`<div class="cat ${c.open?'':'collapsed'}" data-c="${c.id}">
+          <div class="cat-head">
+            <button class="chev" onclick="tog('${c.id}')"><span>&#9660;</span></button>
+            <div class="cat-bar"></div>
+            <input class="cat-name"${RO()} data-k="name" value="${esc(c.name)}" placeholder="Category name" oninput="setF('${c.id}','name',this.value)">
+            <div class="cat-count">${c.lines.length} line${c.lines.length===1?'':'s'}</div>
+            <div class="rowacts">
+              <button class="iconbtn" title="Move up" onclick="move('${c.id}',-1)">&#9650;</button>
+              <button class="iconbtn" title="Move down" onclick="move('${c.id}',1)">&#9660;</button>
+              <button class="iconbtn x" title="Delete category" onclick="del('${c.id}')">&#10005;</button>
+            </div>
+          </div>`;
+        if(c.open){
+          h+=`<div class="lines">
+            <div class="lhead ${g}"><div></div><div>Style / line</div>
+              <div class="col-desc">Notes</div><div class="col-ch">Channel</div><div class="col-st">Status</div>
+              <div class="col-s2 col-sup">Wholesaler</div>
+              <div class="col-s2" style="text-align:right">Unit cost</div>
+              <div class="col-s2" style="text-align:right">Units</div>
+              <div class="col-s2" style="text-align:right">Retail</div>
+              <div class="col-s2" style="text-align:right">Value / GM</div><div></div>
+            </div>`;
+          c.lines.forEach(l=>{
+            const v=lineVal(l), cost=parseFloat(l.cost)||0, ret=parseFloat(l.retail)||0;
+            const gm=(cost&&ret)?Math.round((ret-cost)/ret*100):null;
+            h+=`<div class="lrow ${g}" data-l="${l.id}">
+              <div><i class="dot ${l.st}"></i></div>
+              <div><input class="f"${RO()} data-k="name" value="${esc(l.name)}" placeholder="Style name" oninput="setF('${l.id}','name',this.value)"></div>
+              <div class="col-desc"><input class="f muted"${RO()} data-k="desc" value="${esc(l.desc)}" placeholder="Notes" oninput="setF('${l.id}','desc',this.value)"></div>
+              <div class="col-ch"><select class="f"${RO()} data-k="ch" onchange="setF('${l.id}','ch',this.value)">
+                ${Object.entries(CH).map(([k,vv])=>`<option value="${k}" ${l.ch===k?'selected':''}>${vv}</option>`).join('')}
+              </select></div>
+              <div class="col-st"><select class="f"${RO()} data-k="st" onchange="setF('${l.id}','st',this.value)">
+                <option value="in" ${l.st==='in'?'selected':''}>In</option>
+                <option value="maybe" ${l.st==='maybe'?'selected':''}>Undecided</option>
+                <option value="out" ${l.st==='out'?'selected':''}>Out</option>
+              </select></div>
+              <div class="col-s2 col-sup"><input class="f muted"${RO()} data-k="sup" value="${esc(l.sup)}" placeholder="—" oninput="setF('${l.id}','sup',this.value)"></div>
+              <div class="col-s2"><input class="f num"${RO()} data-k="cost" value="${esc(l.cost)}" placeholder="$" oninput="setF('${l.id}','cost',this.value)"></div>
+              <div class="col-s2"><input class="f num"${RO()} data-k="units" value="${esc(l.units)}" placeholder="0" oninput="setF('${l.id}','units',this.value)"></div>
+              <div class="col-s2"><input class="f num"${RO()} data-k="retail" value="${esc(l.retail)}" placeholder="$" oninput="setF('${l.id}','retail',this.value)"></div>
+              <div class="col-s2 calc">${v?'<b>'+money(v)+'</b>':''}${gm!==null?' <span style="opacity:.7">'+gm+'%</span>':''}</div>
+              <div class="rowacts">
+                <button class="iconbtn" title="Move up" onclick="move('${l.id}',-1)">&#9650;</button>
+                <button class="iconbtn" title="Move down" onclick="move('${l.id}',1)">&#9660;</button>
+                <button class="iconbtn x" title="Delete" onclick="del('${l.id}')">&#10005;</button>
+              </div>
+            </div>`;
+          });
+          h+=`<div class="addbtns"><button class="tiny" onclick="addL('${c.id}')">+ Add style line</button></div>`;
+          if(c.flag) h+=`<div class="flag">${c.flag}</div>`;
+          h+=`</div>`;
+        }
+        h+=`</div>`;
+      });
+      h+=`<div class="addbtns"><button class="tiny" onclick="addCat('${s.id}')">+ Add category</button></div></div>`;
+    }
+    h+=`</div>`;
+  });
+
+  document.getElementById('secs').innerHTML=h;
+  restoreFocus(foc);
+  stats(); recalc();
+  if(mode==='local') saveLocal();
+}
+
+function grabFocus(){
+  const el=document.activeElement;
+  if(!el||!el.matches||!el.matches('input,select')) return null;
+  const row=el.closest('[data-l],[data-c],[data-s]'); if(!row) return null;
+  const id=row.dataset.l||row.dataset.c||row.dataset.s;
+  return {id, k:el.dataset.k, s:el.selectionStart, e:el.selectionEnd};
+}
+function restoreFocus(f){
+  if(!f||!f.k) return;
+  const el=document.querySelector(`[data-l="${f.id}"] [data-k="${f.k}"], [data-c="${f.id}"] [data-k="${f.k}"], [data-s="${f.id}"] [data-k="${f.k}"]`);
+  if(!el) return;
+  el.focus();
+  if(el.setSelectionRange&&f.s!=null){ try{ el.setSelectionRange(f.s,f.e); }catch(e){} }
+}
+
+function stats(){
+  const ls=allLines(), set=(id,v)=>document.getElementById(id).textContent=v;
+  set('s-sec',data.sections.length);
+  set('s-cat',data.sections.reduce((a,s)=>a+s.cats.length,0));
+  set('s-line',ls.length);
+  set('s-in',ls.filter(l=>l.st==='in').length);
+  set('s-maybe',ls.filter(l=>l.st==='maybe').length);
+  set('s-out',ls.filter(l=>l.st==='out').length);
+}
+function recalc(){
+  const spent=allLines().filter(l=>l.st==='in').reduce((a,l)=>a+lineVal(l),0);
+  const tot=parseFloat(data.budget)||0;
+  document.getElementById('b-spent').textContent=money(spent);
+  const bar=document.getElementById('b-bar');
+  bar.style.width=(tot?Math.min(spent/tot*100,100):0)+'%';
+  bar.classList.toggle('over',spent>tot);
+  document.getElementById('b-left').textContent=
+    !tot?'—':spent>tot?money(spent-tot)+' over budget':money(tot-spent)+' remaining';
+}
+
+/* ================= lookup ================= */
+const findS=id=>data.sections.find(s=>s.id===id);
+const findC=id=>data.sections.flatMap(s=>s.cats).find(c=>c.id===id);
+const findL=id=>allLines().find(l=>l.id===id);
+const findAny=id=>findS(id)||findC(id)||findL(id);
+function kind(id){ return findS(id)?'s':findC(id)?'c':findL(id)?'l':null; }
+function siblings(id){
+  const k=kind(id);
+  if(k==='s') return data.sections;
+  if(k==='c') return data.sections.find(s=>s.cats.some(c=>c.id===id)).cats;
+  const c=data.sections.flatMap(s=>s.cats).find(c=>c.lines.some(l=>l.id===id));
+  return c.lines;
+}
+
+/* ================= mutations ================= */
+let pend={}, pendT;
+function setF(id,k,v){
+  if(mode==='shared' && !canWrite) return;
+  const o=findAny(id); if(!o) return;
+  o[k]=v;
+  if(k==='st'||k==='cost'||k==='units'||k==='retail'){ stats(); recalc(); paintDot(id,o); }
+  if(mode==='shared'){
+    pend[path[id]+'/'+k]=v;
+    clearTimeout(pendT);
+    pendT=setTimeout(()=>{ const p=pend; pend={}; FB.update(FB.ref(db),p).catch(err=>flagErr(err)); },350);
+  } else saveLocal();
+}
+function paintDot(id,o){
+  const row=document.querySelector(`[data-l="${id}"] .dot`);
+  if(row) row.className='dot '+o.st;
+  const cell=document.querySelector(`[data-l="${id}"] .calc`);
+  if(cell){ const v=lineVal(o),cost=parseFloat(o.cost)||0,ret=parseFloat(o.retail)||0;
+    const gm=(cost&&ret)?Math.round((ret-cost)/ret*100):null;
+    cell.innerHTML=(v?'<b>'+money(v)+'</b>':'')+(gm!==null?' <span style="opacity:.7">'+gm+'%</span>':''); }
+}
+function tog(id){ const o=findAny(id); o.open=!o.open; openState[id]=o.open; render(); }
+function expandAll(v){ data.sections.forEach(s=>{s.open=v;openState[s.id]=v;
+  s.cats.forEach(c=>{c.open=v;openState[c.id]=v})}); render(); }
+function setBudget(v){ if(mode==='shared' && !canWrite) return; data.budget=v; recalc();
+  if(mode==='shared') FB.set(FB.ref(db,R+'/budget'),v).catch(flagErr); else saveLocal(); }
+
+function newOrd(arr){ return arr.length? Math.max(...arr.map(x=>x.ord||0))+1 : 1; }
+function blankLine(ord){ return {name:'',desc:'',ch:'both',st:'maybe',sup:'',cost:'',units:'',retail:'',ord}; }
+
+function addSec(){
+  if(mode==='shared' && !canWrite) return;
+  if(mode==='shared'){
+    const sid=FB.push(FB.ref(db,R+'/sections')).key,
+          cid=FB.push(FB.ref(db,R+'/sections')).key,
+          lid=FB.push(FB.ref(db,R+'/sections')).key;
+    FB.set(FB.ref(db,R+'/sections/'+sid),
+      {name:'',flag:'',ord:newOrd(data.sections),cats:{[cid]:{name:'',flag:'',ord:1,lines:{[lid]:blankLine(1)}}}})
+      .then(()=>snapshotHistory()).catch(flagErr);
+  } else {
+    data.sections.push({id:nid(),name:'',open:true,flag:'',flagWarn:false,ord:newOrd(data.sections),
+      cats:[{id:nid(),name:'',open:true,flag:'',ord:1,lines:[Object.assign(blankLine(1),{id:nid()})]}]});
+    render();
+    const el=document.querySelector('.sec:last-child .sec-name'); if(el) el.focus();
+  }
+}
+function addCat(sid){
+  if(mode==='shared' && !canWrite) return;
+  const s=findS(sid); if(!s) return;
+  if(mode==='shared'){
+    const cid=FB.push(FB.ref(db,path[sid]+'/cats')).key;
+    const lid0=FB.push(FB.ref(db,R+'/sections')).key;
+    FB.set(FB.ref(db,path[sid]+'/cats/'+cid),{name:'',flag:'',ord:newOrd(s.cats),lines:{[lid0]:blankLine(1)}})
+      .then(()=>snapshotHistory()).catch(flagErr);
+  } else {
+    s.cats.push({id:nid(),name:'',open:true,flag:'',ord:newOrd(s.cats),
+      lines:[Object.assign(blankLine(1),{id:nid()})]});
+    render();
+  }
+}
+function addL(cid){
+  if(mode==='shared' && !canWrite) return;
+  const c=findC(cid); if(!c) return;
+  if(mode==='shared'){
+    const lid=FB.push(FB.ref(db,path[cid]+'/lines')).key;
+    FB.set(FB.ref(db,path[cid]+'/lines/'+lid),blankLine(newOrd(c.lines))).catch(flagErr);
+  } else {
+    c.lines.push(Object.assign(blankLine(newOrd(c.lines)),{id:nid()}));
+    render();
+    const rows=document.querySelectorAll(`[data-c="${cid}"] .lrow`);
+    const r=rows[rows.length-1]; if(r) r.querySelector('input.f').focus();
+  }
+}
+function del(id){
+  if(mode==='shared' && !canWrite) return;
+  const o=findAny(id); if(!o) return;
+  const empty = !o.name && (!o.cats||o.cats.every(c=>!c.name)) && (!o.lines||o.lines.every(l=>!l.name));
+  const doIt=()=>{
+    if(mode==='shared'){ FB.remove(FB.ref(db,path[id])).then(()=>snapshotHistory()).catch(flagErr); }
+    else { const arr=siblings(id); const i=arr.findIndex(x=>x.id===id); arr.splice(i,1); render(); }
+    toast('Removed');
+  };
+  if(empty) return doIt();
+  const sel=`[data-s="${id}"] .sec-head, [data-c="${id}"] .cat-head, [data-l="${id}"]`;
+  ask(document.querySelector(sel),doIt);
+}
+function move(id,d){
+  if(mode==='shared' && !canWrite) return;
+  const arr=siblings(id), i=arr.findIndex(x=>x.id===id), j=i+d;
+  if(j<0||j>=arr.length) return;
+  const a=arr[i], b=arr[j];
+  if(mode==='shared'){
+    const u={};
+    u[path[a.id]+'/ord']=b.ord; u[path[b.id]+'/ord']=a.ord;
+    FB.update(FB.ref(db),u).catch(flagErr);
+  } else { const t=a.ord; a.ord=b.ord; b.ord=t; arr.sort((x,y)=>x.ord-y.ord); render(); }
+}
+function ask(el,fn){
+  if(!el) return fn();
+  el.classList.add('pending');
+  const acts=el.querySelector('.rowacts'), old=acts.innerHTML;
+  acts.style.opacity=1;
+  acts.innerHTML=`<button class="tiny danger">Remove</button> <button class="tiny">Cancel</button>`;
+  acts.children[0].onclick=fn;
+  acts.children[1].onclick=()=>{ el.classList.remove('pending'); acts.innerHTML=old; acts.style.opacity=''; render(); };
+}
+function toggleStep2(){ document.body.classList.toggle('step2',document.getElementById('s2').checked); render(); }
+
+/* ================= serialise ================= */
+function toFlat(){
+  const o={budget:data.budget,sections:{}};
+  data.sections.forEach((s,i)=>{
+    const S={name:s.name,flag:s.flag||'',flagWarn:!!s.flagWarn,ord:s.ord||i+1,cats:{}};
+    s.cats.forEach((c,j)=>{
+      const C={name:c.name,flag:c.flag||'',ord:c.ord||j+1,lines:{}};
+      c.lines.forEach((l,k)=>{ C.lines['s'+i+'c'+j+'l'+k]={name:l.name,desc:l.desc,ch:l.ch,st:l.st,
+        sup:l.sup,cost:l.cost,units:l.units,retail:l.retail,ord:l.ord||k+1}; });
+      S.cats['s'+i+'c'+j]=C;
+    });
+    o.sections['s'+i]=S;
+  });
+  return o;
+}
+function fromFlat(v){
+  path={}; parent={};
+  const secs=Object.entries(v.sections||{}).map(([sid,s])=>{
+    path[sid]=R+'/sections/'+sid;
+    return {id:sid,ord:s.ord||0,name:s.name||'',flag:s.flag||'',flagWarn:!!s.flagWarn,
+      open:openState[sid]!==false,
+      cats:Object.entries(s.cats||{}).map(([cid,c])=>{
+        path[cid]=path[sid]+'/cats/'+cid; parent[cid]=sid;
+        return {id:cid,ord:c.ord||0,name:c.name||'',flag:c.flag||'',open:openState[cid]!==false,
+          lines:Object.entries(c.lines||{}).map(([lid,l])=>{
+            path[lid]=path[cid]+'/lines/'+lid; parent[lid]=cid;
+            return {id:lid,ord:l.ord||0,name:l.name||'',desc:l.desc||'',ch:l.ch||'both',st:l.st||'in',
+              sup:l.sup||'',cost:l.cost||'',units:l.units||'',retail:l.retail||''};
+          }).sort((a,b)=>a.ord-b.ord)};
+      }).sort((a,b)=>a.ord-b.ord)};
+  }).sort((a,b)=>a.ord-b.ord);
+  data={budget:v.budget??30000,sections:secs};
+  const bt=document.getElementById('b-total'); if(bt) bt.value=data.budget;
+}
+function json(){ return JSON.stringify({app:"naseer-catalog",v:3,budget:data.budget,sections:data.sections},null,2); }
+function csv(){
+  const q=s=>'"'+String(s==null?'':s).replace(/"/g,'""')+'"';
+  const rows=[["Section","Category","Style / line","Notes","Channel","Status","Wholesaler","Unit cost","Units","Inventory value","Retail","Gross margin %"]];
+  data.sections.forEach(s=>s.cats.forEach(c=>c.lines.forEach(l=>{
+    const cost=parseFloat(l.cost)||0, ret=parseFloat(l.retail)||0;
+    rows.push([s.name,c.name,l.name,l.desc,CH[l.ch],l.st,l.sup,l.cost,l.units,
+      lineVal(l)||'',l.retail,(cost&&ret)?Math.round((ret-cost)/ret*100):'']);
+  })));
+  return rows.map(r=>r.map(q).join(",")).join("\r\n");
+}
+function hydrateArrays(o){
+  let secs;
+  if(o.sections&&Array.isArray(o.sections)) secs=o.sections;
+  else if(o.sections) return fromFlat(o);
+  else if(o.categories) secs=[{name:"Imported",cats:o.categories}];
+  else throw new Error('bad');
+  secs.forEach((s,i)=>{ s.id=nid(); s.open=true; s.ord=s.ord||i+1; s.flag=s.flag||''; s.cats=s.cats||[];
+    s.cats.forEach((c,j)=>{ c.id=nid(); c.open=true; c.ord=c.ord||j+1; c.flag=c.flag||''; c.lines=c.lines||[];
+      c.lines.forEach((l,k)=>{ l.id=nid(); l.ord=l.ord||k+1; l.desc=l.desc||''; l.ch=l.ch||'both';
+        l.st=l.st||'in'; l.sup=l.sup||''; l.cost=l.cost||''; l.units=l.units||''; l.retail=l.retail||''; }); }); });
+  data={budget:o.budget||30000,sections:secs};
+  const bt=document.getElementById('b-total'); if(bt) bt.value=data.budget;
+}
+
+/* ================= local mode ================= */
+const KEY='naseer-catalog-v3';
+let storeOK=(()=>{try{localStorage.setItem('__t','1');localStorage.removeItem('__t');return true}catch(e){return false}})();
+let lsT;
+function saveLocal(){
+  if(mode!=='local'||!storeOK) return;
+  clearTimeout(lsT);
+  lsT=setTimeout(()=>{ try{ localStorage.setItem(KEY,json()); setSync('local'); }catch(e){} },400);
+}
+
+/* ================= shared mode ================= */
+function flagErr(e){ setSync('off',(e&&e.message)||'write failed'); }
+function setSync(state,msg){
+  const el=document.getElementById('sync');
+  el.className='sync'+(state==='local'?' local':state==='off'?' off':'');
+  el.textContent = msg ? msg
+    : state==='shared' ? 'Shared — live'
+    : state==='local'  ? (storeOK?'Private copy · saved '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'Not saving')
+    : 'Offline';
+}
+function startShared(){
+  FB=window.FB; db=FB.getDatabase(FB.app); auth=FB.getAuth(FB.app);
+  mode='shared';
+  document.getElementById('authbar').style.display='';
+  document.getElementById('histwrap').classList.remove('hidden');
+
+  FB.onAuthStateChanged(auth, u=>{
+    user=u;
+    document.getElementById('signedout').style.display = u?'none':'';
+    document.getElementById('signedin').style.display  = u?'':'none';
+    document.getElementById('useremail').textContent   = u?u.email:'';
+    autherr('');
+    if(!u){ role='viewer'; branch='master'; applyRole(); subscribe(); return; }
+    claimRoleThen(()=>{ applyRole(); subscribe(); });
+  });
+
+  const me=FB.ref(db,ROOT()+'/presence/'+CLIENT);
+  FB.onDisconnect(me).remove();
+  FB.set(me,{name:myName||'Someone',t:Date.now()}).catch(()=>{});
+  FB.onValue(FB.ref(db,ROOT()+'/presence'),s=>paintPresence(s.val()||{}),()=>{});
+  setInterval(()=>{ if(user) FB.set(me,{name:myName||'Someone',t:Date.now()}).catch(()=>{}); },50000);
+  FB.onValue(FB.ref(db,ROOT()+'/history'),s=>paintHistory(s.val()||{}),()=>{});
+}
+
+/* ---- roles ---- */
+function claimRoleThen(done){
+  FB.get(FB.ref(db,'roles')).then(snap=>{
+    const roles=snap.val();
+    if(!roles || !Object.keys(roles).length){
+      FB.set(FB.ref(db,'roles/'+user.uid),'owner')
+        .then(()=>{ role='owner'; done(); })
+        .catch(()=>{ role='editor'; done(); });
+      return;
+    }
+    role = roles[user.uid] || 'editor';
+    done();
+  }).catch(()=>{ role='editor'; done(); });
+}
+function applyRole(){
+  const owner = role==='owner';
+  const badge=document.getElementById('rolebadge');
+  badge.textContent=role; badge.className='role '+(owner?'owner':role==='viewer'?'viewer':'');
+  if(!user) branch='master';
+  canWrite = owner ? true : (!!user && branch==='draft');
+  document.body.classList.toggle('ro',!canWrite);
+  document.getElementById('seg-master').classList.toggle('on',branch==='master');
+  document.getElementById('seg-draft').classList.toggle('on',branch==='draft');
+  document.getElementById('seg-draft').style.display = user?'':'none';
+  document.getElementById('btn-publish').style.display = owner?'':'none';
+  document.getElementById('btn-pull').style.display    = owner?'':'none';
+  const lock=document.getElementById('rolock');
+  lock.style.display = canWrite?'none':'';
+  lock.textContent = !user ? 'Read-only — sign in to edit'
+    : branch==='master' ? 'Master is read-only — switch to Draft'
+    : 'Read-only';
+  const rb=document.getElementById('resetbtn'); if(rb) rb.style.display = canWrite?'':'none';
+}
+function setBranch(b){
+  if(b==='draft' && !user) return autherr('Sign in to use the draft');
+  branch=b; applyRole(); subscribe();
+}
+function autherr(m){ const e=document.getElementById('autherr'); if(e) e.textContent=m||''; }
+
+/* ---- data subscription for the active branch ---- */
+function subscribe(){
+  if(unsub){ try{ unsub(); }catch(e){} unsub=null; }
+  R = ROOT()+'/'+branch;
+  lastRemote='';
+  unsub = FB.onValue(FB.ref(db,R),snap=>{
+    const v=snap.val();
+    if(!v||!v.sections){
+      if(branch==='master' && role==='owner') FB.set(FB.ref(db,R),toFlatFrom(DEFAULT)).catch(flagErr);
+      else if(branch==='draft' && user) copyMasterToDraft();
+      else setSync('shared');
+      return;
+    }
+    const s=JSON.stringify(v);
+    if(s===lastRemote) return;
+    lastRemote=s;
+    fromFlat(v); render(); setSync('shared');
+  },err=>flagErr(err));
+}
+function copyMasterToDraft(){
+  FB.get(FB.ref(db,ROOT()+'/master')).then(m=>{
+    const v=m.val(); if(!v) return;
+    FB.set(FB.ref(db,ROOT()+'/draft'),v).catch(flagErr);
+  }).catch(()=>{});
+}
+function armed(b,label,armedLabel,fn){
+  if(b.dataset.arm!=='1'){
+    b.dataset.arm='1'; b.textContent=armedLabel; b.classList.add('danger');
+    setTimeout(()=>{ if(b.dataset.arm==='1'){ b.dataset.arm=''; b.textContent=label; b.classList.remove('danger'); } },4000);
+    return;
+  }
+  b.dataset.arm=''; b.textContent=label; b.classList.remove('danger'); fn();
+}
+function pullMaster(){
+  if(role!=='owner') return;
+  armed(document.getElementById('btn-pull'),'Reset draft from master','Overwrite draft — click again',
+    ()=>{ copyMasterToDraft(); toast('Draft reset from master'); });
+}
+function publish(){
+  if(role!=='owner') return;
+  armed(document.getElementById('btn-publish'),'Publish draft → master','Overwrite master — click again', ()=>{
+    FB.get(FB.ref(db,ROOT()+'/draft')).then(d=>{
+      const v=d.val();
+      if(!v||!v.sections) return toast('Draft is empty — nothing to publish');
+      snapshotHistory();
+      FB.set(FB.ref(db,ROOT()+'/master'),v).then(()=>toast('Published to master')).catch(flagErr);
+    }).catch(flagErr);
+  });
+}
+
+/* ---- sign in / out ---- */
+function signIn(){
+  const e=document.getElementById('au-email').value.trim();
+  const p=document.getElementById('au-pass').value;
+  if(!e||!p) return autherr('Enter your email and password');
+  autherr('Signing in…');
+  FB.signInWithEmailAndPassword(auth,e,p)
+    .then(()=>{ document.getElementById('au-pass').value=''; autherr(''); })
+    .catch(err=>autherr(
+      /invalid-credential|wrong-password|user-not-found|invalid-email/.test(err.code||'') ? 'Email or password not recognised'
+      : /too-many-requests/.test(err.code||'') ? 'Too many attempts — wait a minute'
+      : (err.message||'Sign-in failed')));
+}
+function signOutNow(){ branch='master'; FB.signOut(auth); }
+function toFlatFrom(src){ const keep=data; data=JSON.parse(JSON.stringify(src)); const f=toFlat(); data=keep; return f; }
+function paintPresence(p){
+  const others=Object.entries(p).filter(([k])=>k!==CLIENT).map(([,v])=>v.name||'?');
+  const el=document.getElementById('avs');
+  el.innerHTML=others.slice(0,5).map(n=>`<div class="av" title="${esc(n)}">${esc(n.trim()[0]||'?').toUpperCase()}</div>`).join('');
+  el.title=others.length?others.join(', ')+' also here':'';
+}
+let histT;
+function snapshotHistory(){
+  if(mode!=='shared') return;
+  clearTimeout(histT);
+  histT=setTimeout(()=>{
+    FB.get(FB.ref(db,ROOT()+'/master/sections')).then(s=>{
+      const k=FB.push(FB.ref(db,ROOT()+'/history')).key;
+      FB.set(FB.ref(db,ROOT()+'/history/'+k),{t:Date.now(),by:myName||'Someone',
+        data:JSON.stringify({budget:data.budget,sections:s.val()})}).catch(()=>{});
+      FB.get(FB.ref(db,ROOT()+'/history')).then(h=>{
+        const all=Object.entries(h.val()||{}).sort((a,b)=>a[1].t-b[1].t);
+        all.slice(0,Math.max(0,all.length-20)).forEach(([kk])=>FB.remove(FB.ref(db,ROOT()+'/history/'+kk)));
+      });
+    });
+  },4000);
+}
+function paintHistory(h){
+  const all=Object.entries(h).sort((a,b)=>b[1].t-a[1].t).slice(0,20);
+  document.getElementById('hist').innerHTML = all.length? all.map(([k,v])=>
+    `<div><span class="t">${new Date(v.t).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}</span>
+     <span class="b">by ${esc(v.by||'someone')}</span>
+     <button class="tiny" onclick="restoreHist('${k}')">Restore</button></div>`).join('')
+    : '<div><span class="b">No snapshots yet.</span></div>';
+}
+let histArm=null;
+function restoreHist(k){
+  if(role!=='owner') return toast('Only the owner can restore a version');
+  if(histArm!==k){ histArm=k; toast('Click Restore again to overwrite the shared list'); setTimeout(()=>histArm=null,5000); return; }
+  histArm=null;
+  FB.get(FB.ref(db,ROOT()+'/history/'+k)).then(s=>{
+    const v=s.val(); if(!v) return;
+    const parsed=JSON.parse(v.data);
+    FB.update(FB.ref(db,ROOT()+'/master'),{sections:parsed.sections,budget:parsed.budget??30000})
+      .then(()=>toast('Restored')).catch(flagErr);
+  });
+}
+
+/* ================= panel ================= */
+function togglePanel(){
+  const p=document.getElementById('panel'); p.classList.toggle('hidden');
+  if(!p.classList.contains('hidden')) document.getElementById('io').value=json();
+}
+function download(k){
+  const j=k==='json';
+  const b=new Blob([j?json():csv()],{type:(j?'application/json':'text/csv')+';charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+  a.download=j?'naseer-catalog.json':'naseer-catalog.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  toast(j?'Data file downloaded':'CSV downloaded');
+}
+function copyJSON(){ const t=document.getElementById('io'); t.value=json(); t.select();
+  navigator.clipboard?navigator.clipboard.writeText(t.value).then(()=>toast('Copied')):(document.execCommand('copy'),toast('Copied')); }
+function loadJSON(){
+  if(mode==='shared' && !canWrite) return toast('Read-only — switch to Draft or sign in');
+  const t=document.getElementById('io').value.trim();
+  if(!t) return toast('Paste your saved data first');
+  try{
+    const o=JSON.parse(t); hydrateArrays(o);
+    if(mode==='shared'){ const f=toFlat(); FB.set(FB.ref(db,R),f).then(()=>toast('Loaded for everyone')).catch(flagErr); }
+    else { render(); toast('Loaded'); }
+  }catch(e){ toast('That does not look like a saved catalog file'); }
+}
+let resetArm=false;
+function reset(){
+  if(mode==='shared' && !canWrite) return;
+  const b=document.getElementById('resetbtn');
+  if(!resetArm){ resetArm=true; b.textContent='Reset — click again'; b.classList.add('danger');
+    setTimeout(()=>{ if(resetArm){resetArm=false;b.textContent='Reset to original list';b.classList.remove('danger')} },4000); return; }
+  resetArm=false; b.textContent='Reset to original list'; b.classList.remove('danger');
+  if(mode==='shared'){ FB.set(FB.ref(db,R),toFlatFrom(DEFAULT)).then(()=>toast('Reset for everyone')).catch(flagErr); }
+  else { hydrateArrays(JSON.parse(JSON.stringify(DEFAULT))); render(); toast('Reset'); }
+}
+function setName(v){
+  myName=v; localStorage.setItem('naseer-name',v);
+  if(mode==='shared') FB.set(FB.ref(db,R+'/presence/'+CLIENT),{name:v||'Someone',t:Date.now()}).catch(()=>{});
+}
+
+let tt; function toast(m){ const el=document.getElementById('toast'); el.textContent=m;
+  el.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove('show'),2400); }
+
+/* ================= boot ================= */
+function boot(){
+  document.getElementById('myname').value=myName;
+  const cfg=window.FIREBASE_CONFIG||{};
+  const configured=!!(cfg.databaseURL&&cfg.apiKey);
+
+  if(configured&&window.FB){
+    startShared();
+    document.getElementById('banner-text').innerHTML=
+      `<b>Master</b> is the real list — only the owner can change it, and it is what everyone sees by default.
+       <b>Draft</b> is the shared working copy: sign in and anything you change there is visible live to the others,
+       but it cannot touch the master. The owner reviews the draft and clicks <b>Publish</b> when it is ready.`;
+    document.getElementById('panel-mode').innerHTML=
+      `Master is owner-only; the draft is open to everyone signed in. Downloads below back up whichever version you are looking at — worth taking one before any big reorganisation.`;
+    // start from seed until first snapshot arrives
+    data.sections.forEach((s,i)=>{s.ord=i+1;s.cats.forEach((c,j)=>{c.ord=j+1;c.lines.forEach((l,k)=>l.ord=k+1)})});
+    render();
+    return;
+  }
+
+  mode='local';
+  // restore local copy
+  if(storeOK){ try{ const t=localStorage.getItem(KEY); if(t) hydrateArrays(JSON.parse(t)); }catch(e){} }
+  data.sections.forEach((s,i)=>{s.ord=s.ord||i+1;s.cats.forEach((c,j)=>{c.ord=c.ord||j+1;
+    c.lines.forEach((l,k)=>l.ord=l.ord||k+1)})});
+  render(); setSync('local');
+  document.getElementById('avs').parentElement.style.display='none';
+
+  const b=document.getElementById('banner');
+  b.className='banner setup';
+  document.getElementById('banner-text').innerHTML= configured
+    ? `<b>Shared editing couldn't start.</b> ${esc(window.FB_ERR||'The Firebase library did not load.')} Working as a private copy for now — your edits save in this browser only.`
+    : `<b>Shared editing is not switched on yet.</b> Right now this is your own private copy: your edits save in this
+       browser, on this device, and nobody else sees them. To make one shared list everyone edits together, paste your
+       Firebase details into the <code>FIREBASE_CONFIG</code> block near the bottom of this file. Setup instructions came with it.`;
+}
+window.addEventListener('fbready',boot);
+setTimeout(()=>{ if(!document.getElementById('secs').innerHTML) boot(); },3000);
+</script>
+</body>
+</html>
