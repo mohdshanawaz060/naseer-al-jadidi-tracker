@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Naseer Al Jadidi — Launch Tracker</title>
+<style>
+  :root{
+    --green-950:#0b2b28;
+    --green-900:#0f3d3a;
+    --green-800:#14524d;
+    --gold-500:#c9a227;
+    --gold-400:#dab94a;
+    --cream-100:#faf6ec;
+    --cream-200:#f2ead6;
+    --ink-900:#1c1a14;
+    --ink-600:#5b564a;
+    --red-500:#c0392b;
+    --red-100:#fbe4e0;
+    --amber-500:#b7791f;
+    --amber-100:#fbecd3;
+    --green-done:#2e7d5b;
+    --green-done-100:#e1f3ea;
+    --border:#e4dcc7;
+    --shadow: 0 2px 10px rgba(15,61,58,0.08);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--cream-100);
+    color:var(--ink-900);
+  }
+  header{
+    background:linear-gradient(135deg,var(--green-950),var(--green-800));
+    color:var(--cream-100);
+    padding:28px 32px 24px;
+  }
+  header h1{margin:0 0 4px;font-size:24px;letter-spacing:.3px;font-weight:700;}
+  header .sub{margin:0;font-size:13.5px;color:var(--cream-200);opacity:.85;}
+  header .profile{
+    margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;
+  }
+  header .pchip{
+    background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);
+    border-radius:20px;padding:4px 12px;font-size:11.5px;color:var(--cream-200);
+  }
+  header .pchip b{color:var(--gold-400);font-weight:700;}
+  .countdowns{display:flex;gap:16px;margin-top:18px;flex-wrap:wrap;}
+  .cd-card{
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+    border-radius:10px;padding:14px 18px;min-width:200px;flex:1;
+  }
+  .cd-card .label{
+    font-size:11px;text-transform:uppercase;letter-spacing:.8px;
+    color:var(--gold-400);font-weight:700;margin-bottom:6px;
+  }
+  .cd-card .days{font-size:24px;font-weight:800;line-height:1;}
+  .cd-card .date{font-size:12px;color:var(--cream-200);margin-top:4px;}
+  .cd-card .bar-track{margin-top:10px;height:7px;background:rgba(255,255,255,.18);border-radius:4px;overflow:hidden;}
+  .cd-card .bar-fill{height:100%;background:var(--gold-400);border-radius:4px;transition:width .3s ease;}
+  .cd-card .pct{font-size:11px;color:var(--cream-200);margin-top:5px;}
+
+  main{max-width:1440px;margin:0 auto;padding:22px 24px 60px;}
+
+  .toolbar{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:#fff;
+    border:1px solid var(--border);border-radius:10px;padding:14px;
+    box-shadow:var(--shadow);margin-bottom:18px;
+  }
+  .toolbar select,.toolbar input[type=text]{
+    padding:8px 10px;border-radius:7px;border:1px solid var(--border);
+    font-size:13px;background:var(--cream-100);color:var(--ink-900);
+  }
+  .toolbar input[type=text]{min-width:200px;flex:1;}
+  .toolbar button{
+    padding:8px 14px;border-radius:7px;border:1px solid var(--green-800);
+    background:var(--green-900);color:#fff;font-size:13px;font-weight:600;cursor:pointer;
+  }
+  .toolbar button.secondary{background:#fff;color:var(--green-900);}
+  .toolbar button:hover{opacity:.88;}
+
+  .summary-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+  .chip{
+    background:#fff;border:1px solid var(--border);border-radius:20px;
+    padding:6px 14px;font-size:12.5px;font-weight:600;color:var(--ink-600);
+  }
+  .chip b{color:var(--ink-900);}
+  .chip.act{cursor:pointer;user-select:none;transition:border-color .12s,background .12s;}
+  .chip.act:hover{border-color:var(--green-800);background:var(--cream-200);}
+  .chip.showing{background:var(--cream-200);border-color:var(--cream-200);}
+  .chip.hot{border-color:var(--red-500);background:var(--red-100);color:var(--red-500);}
+  .chip.hot b{color:var(--red-500);}
+  .chip.warm{border-color:var(--amber-500);background:var(--amber-100);color:var(--amber-500);}
+  .chip.warm b{color:var(--amber-500);}
+
+  select#f-timeview{
+    font-weight:700;border-color:var(--green-800)!important;
+    background:var(--green-900)!important;color:#fff!important;
+  }
+
+  table{
+    width:100%;border-collapse:collapse;background:#fff;border-radius:10px;
+    overflow:hidden;box-shadow:var(--shadow);
+  }
+  thead th{
+    text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;
+    color:var(--ink-600);background:var(--cream-200);padding:10px;
+    border-bottom:1px solid var(--border);white-space:nowrap;
+  }
+  tbody td{padding:9px 10px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+  tbody tr:hover{background:#fbf9f2;}
+  tbody tr.done{opacity:.55;}
+  tbody tr.overdue td{background:var(--red-100);}
+  tbody tr.soon td{background:var(--amber-100);}
+
+  .badge{display:inline-block;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:700;white-space:nowrap;}
+  .badge.le{background:#ede4f7;color:#5b3a8c;}
+  .badge.ec{background:#e5f0ee;color:var(--green-800);}
+  .badge.bq{background:#f4e9d3;color:#8a6416;}
+  .badge.prio-High{background:#fbe4e0;color:var(--red-500);}
+  .badge.prio-Medium{background:#fbecd3;color:var(--amber-500);}
+  .badge.prio-Low{background:#e9edf2;color:#4a5568;}
+
+  .flag{
+    display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.3px;
+    padding:2px 6px;border-radius:9px;margin-left:6px;vertical-align:1px;white-space:nowrap;
+  }
+  .flag.cpa{background:#e8eefb;color:#28457e;}
+  .flag.atty{background:#f2ecfa;color:#5b3a8c;}
+  .flag.crit{background:#fbe4e0;color:var(--red-500);}
+
+  select.status-select{
+    font-size:12px;padding:5px 6px;border-radius:6px;
+    border:1px solid var(--border);font-weight:600;
+  }
+  select.status-select.st-Not-Started{background:#eef0f2;color:#556;}
+  select.status-select.st-In-Progress{background:#e2eefc;color:#1d5faa;}
+  select.status-select.st-Done{background:var(--green-done-100);color:var(--green-done);}
+  select.status-select.st-Blocked{background:var(--red-100);color:var(--red-500);}
+
+  input.owner-input,input.notes-input{
+    width:100%;border:1px solid transparent;background:transparent;font-size:13px;
+    padding:4px 5px;border-radius:5px;color:var(--ink-900);font-family:inherit;
+  }
+  input.owner-input:hover,input.notes-input:hover,
+  input.owner-input:focus,input.notes-input:focus{border-color:var(--border);background:var(--cream-100);}
+  input.notes-input{min-width:130px;}
+
+  .task-cell{max-width:340px;}
+  .task-name{font-weight:600;}
+  .task-sub{font-size:11.5px;color:var(--ink-600);margin-top:2px;line-height:1.45;}
+
+  input[type=checkbox]{width:17px;height:17px;accent-color:var(--green-done);cursor:pointer;}
+
+  .cat-group-row td{
+    background:var(--green-950);color:var(--cream-100);font-weight:700;
+    font-size:12px;letter-spacing:.3px;padding:8px 12px;
+  }
+
+  footer{max-width:1440px;margin:0 auto;padding:10px 24px 40px;color:var(--ink-600);font-size:12px;line-height:1.7;}
+  footer b{color:var(--ink-900);}
+
+  @media (max-width:760px){
+    .toolbar input[type=text]{min-width:120px;}
+    thead{display:none;}
+    table,tbody,tr,td{display:block;width:100%;}
+    tbody tr{border-bottom:2px solid var(--border);padding:8px 0;}
+    tbody td{border-bottom:none;padding:4px 12px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Naseer Al Jadidi — Launch Tracker</h1>
+  <p class="sub">Men's boutique &amp; e-commerce, Lombard IL — Middle Eastern clothing, perfumes, designer-inspired fragrances, oud oils &amp; attars</p>
+  <div class="countdowns" id="countdowns"></div>
+</header>
+
+<main>
+  <div class="toolbar">
+    <select id="f-timeview" class="tv">
+      <option value="all">⏱ All tasks</option>
+      <option value="overdue">🔴 Overdue — pending from before</option>
+      <option value="today">⭐ Due today</option>
+      <option value="active">▶ Active today (in window)</option>
+      <option value="focus">🎯 Today's focus (overdue + due today)</option>
+      <option value="week">📅 Due in next 7 days</option>
+      <option value="upcoming">⏳ Not started yet</option>
+      <option value="done">✓ Completed</option>
+    </select>
+    <select id="f-phase">
+      <option value="all">All phases</option>
+      <option value="LE">Legal, Tax &amp; Entity (Aug 20)</option>
+      <option value="EC">E-commerce (Aug 25)</option>
+      <option value="BQ">Boutique (Oct 1)</option>
+    </select>
+    <select id="f-category"><option value="all">All categories</option></select>
+    <select id="f-status">
+      <option value="all">All statuses</option>
+      <option value="Not Started">Not Started</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Done">Done</option>
+      <option value="Blocked">Blocked</option>
+    </select>
+    <select id="f-owner"><option value="all">All owners</option></select>
+    <select id="f-priority">
+      <option value="all">All priorities</option>
+      <option value="High">High</option>
+      <option value="Medium">Medium</option>
+      <option value="Low">Low</option>
+    </select>
+    <input type="text" id="f-search" placeholder="Search tasks...">
+    <button id="btn-export" class="secondary">Export CSV</button>
+    <button id="btn-reset" class="secondary">Reset all progress</button>
+  </div>
+
+  <div class="summary-row" id="summary"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th></th><th>ID</th><th>Phase</th><th>Task</th><th>Owner</th>
+        <th>Start</th><th>Due</th><th>Priority</th><th>Status</th><th>Notes</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</main>
+
+<footer>
+  Naseer Al Jadidi launch tracker · Targets: legal &amp; tax setup 20 Aug 2026 · e-commerce go-live 25 Aug 2026 · boutique grand opening 1 Oct 2026.<br>
+  <b>Not professional advice.</b> Tax items reflect a CPA-style analysis of your stated facts and are starting points for a licensed Illinois CPA and business attorney — not a substitute for one.
+  Figures current as of Aug 2026: Social Security wage base $184,500 · Section 179 cap $2.56M · 100% bonus depreciation (permanent, property acquired after 19 Jan 2025) · Illinois PTE tax 4.95% (made permanent by SB 1911) · federal SALT cap ≈$40,400.<br>
+  Verify Lombard requirements directly: licensing 630-620-5913 · building 630-620-5750. Edits save in your own browser only.
+</footer>
+
+<script>
+const TASKS = [
+
+// ========== MEMBER STATUS & ELIGIBILITY ==========
+{id:"LE-01",phase:"LE",category:"Member Status & Eligibility",task:"Document operating member's LPR (green card) status for the file",sub:"Lawful permanent residents are U.S. tax residents — taxed on worldwide income, no NRA withholding, and eligible to be S-corp shareholders. Confirms the full range of elections stays open.",owner:"Founder",start:"2026-08-06",due:"2026-08-08",priority:"High"},
+{id:"LE-02",phase:"LE",category:"Member Status & Eligibility",task:"Establish each of the 3 investors' U.S. tax status before accepting any funds",sub:"Citizen / green card / substantial-presence resident / NONRESIDENT ALIEN. Collect W-9 (or W-8BEN) from each. This single fact changes withholding, elections and filing obligations.",owner:"CPA",start:"2026-08-06",due:"2026-08-11",priority:"High"},
+{id:"LE-03",phase:"LE",category:"Member Status & Eligibility",task:"If ANY investor is a nonresident alien: model §1446 withholding on effectively connected income",sub:"The LLC must withhold and remit on a foreign partner's allocable share of ECI at the highest applicable rate — even when no cash is distributed. Also permanently blocks an S-corp election.",owner:"CPA",start:"2026-08-08",due:"2026-08-14",priority:"High"},
+{id:"LE-04",phase:"LE",category:"Member Status & Eligibility",task:"Review operating member's employment contract for outside-business restrictions",sub:"Moonlighting clauses, conflict-of-interest policies, IP assignment and non-compete terms. A retail side business is usually fine, but confirm before the entity is public record.",owner:"Founder",start:"2026-08-06",due:"2026-08-10",priority:"High"},
+{id:"LE-05",phase:"LE",category:"Member Status & Eligibility",task:"Decide: are the 3 investors equity members or lenders?",sub:"Debt = fixed return, no K-1s, no dilution, no §469 complexity, keeps 100% ownership. Equity = shared upside, but permanent owners with passive-loss and NIIT consequences. Drives everything downstream.",owner:"Founder",start:"2026-08-06",due:"2026-08-11",priority:"High"},
+{id:"LE-06",phase:"LE",category:"Member Status & Eligibility",task:"Confirm no immigration exposure from extended absences or business travel",sub:"Green card status can be jeopardised by prolonged time outside the U.S. Worth a note if sourcing trips to the Gulf are planned.",owner:"Founder",start:"2026-08-08",due:"2026-08-14",priority:"Medium"},
+
+// ========== MATERIAL PARTICIPATION (§469) ==========
+{id:"LE-07",phase:"LE",category:"Material Participation (§469)",task:"Assess whether the operating member can meet a §469 material participation test",sub:"THE central tax issue given a full-time job. Fail it and year-one losses become passive — unusable against W-2 salary and suspended until passive income or full disposition.",owner:"CPA",start:"2026-08-06",due:"2026-08-12",priority:"High"},
+{id:"LE-08",phase:"LE",category:"Material Participation (§469)",task:"Pick the target test and stress-test it against the day job",sub:"500-hour test ≈ 10 hrs/week every week. Alternative: 100+ hours with no one participating more — often easier where staff are part-time. Choose deliberately, don't assume.",owner:"CPA",start:"2026-08-08",due:"2026-08-14",priority:"High"},
+{id:"LE-09",phase:"LE",category:"Material Participation (§469)",task:"Start a contemporaneous time log from day one — date, hours, activity, who else worked",sub:"Reconstructed logs are routinely rejected on audit. Set up a simple shared sheet or app now; retrofitting this in April is not possible.",owner:"Founder",start:"2026-08-06",due:"2026-08-10",priority:"High"},
+{id:"LE-10",phase:"LE",category:"Material Participation (§469)",task:"Brief the 3 investors in writing that their losses will be passive and suspended",sub:"Passive investors generally cannot deduct year-one losses against salary or portfolio income. Set this expectation before money moves, not after the first K-1 lands.",owner:"Founder",start:"2026-08-08",due:"2026-08-15",priority:"High"},
+{id:"LE-11",phase:"LE",category:"Material Participation (§469)",task:"Model §465 at-risk limitations for each member",sub:"Losses are capped at each member's amount at risk. Non-recourse debt and guarantees change the answer member by member.",owner:"CPA",start:"2026-08-10",due:"2026-08-17",priority:"Medium"},
+{id:"LE-12",phase:"LE",category:"Material Participation (§469)",task:"Assess 3.8% Net Investment Income Tax exposure on investors' passive share",sub:"Passive income is generally NIIT-exposed for higher earners. Income from an activity the operating member materially participates in generally is not — another reason LE-07 matters.",owner:"CPA",start:"2026-08-10",due:"2026-08-17",priority:"Medium"},
+
+// ========== TAX ELECTIONS & PLANNING ==========
+{id:"LE-13",phase:"LE",category:"Tax Elections & Planning",task:"Confirm default partnership taxation (Form 1065 + K-1s) as the starting point",sub:"A 4-member LLC defaults to partnership treatment. Supports special allocations and a preferred return; an S-corp does not.",owner:"CPA",start:"2026-08-08",due:"2026-08-13",priority:"High"},
+{id:"LE-14",phase:"LE",category:"Tax Elections & Planning",task:"Run the S-corp analysis — but expect it to underperform here",sub:"2026 Social Security wage base is $184,500. If the W-2 day job already consumes it, LLC earnings face only the 2.9% Medicare portion, so the classic S-corp SE-tax saving largely disappears.",owner:"CPA",start:"2026-08-10",due:"2026-08-18",priority:"High"},
+{id:"LE-15",phase:"LE",category:"Tax Elections & Planning",task:"Resolve the S-corp vs preferred-return conflict before promising investors anything",sub:"An S-corp's single-class-of-stock rule prohibits preferential distributions. If you promise a preferred return, you are choosing partnership treatment — decide in that order.",owner:"CPA",start:"2026-08-10",due:"2026-08-18",priority:"High"},
+{id:"LE-16",phase:"LE",category:"Tax Elections & Planning",task:"Evaluate the Illinois PTE tax election (4.95%, entity level)",sub:"Made permanent by SB 1911 (Dec 2025). Converts capped personal SALT into a fully deductible entity expense. Benefit is narrower now the federal SALT cap sits near $40,400 — model it, don't assume it.",owner:"CPA",start:"2026-08-12",due:"2026-08-20",priority:"Medium"},
+{id:"LE-17",phase:"LE",category:"Tax Elections & Planning",task:"Model the §199A QBI deduction (20%) including W-2 wage and UBIA limits",sub:"Retail is not a specified service trade, so the SSTB bar doesn't apply. But with substantial W-2 income the operating member may land in the phase-in range where wages paid and property basis start to cap the deduction.",owner:"CPA",start:"2026-08-12",due:"2026-08-20",priority:"Medium"},
+{id:"LE-18",phase:"LE",category:"Tax Elections & Planning",task:"Set up §195 start-up and §709 organizational cost treatment",sub:"Up to $5,000 of each deductible in year one, phasing out above $50,000, remainder amortised over 180 months. Requires clean categorisation from the first receipt.",owner:"CPA",start:"2026-08-10",due:"2026-08-18",priority:"High"},
+{id:"LE-19",phase:"LE",category:"Tax Elections & Planning",task:"Fix the date the business is deemed to 'begin operations'",sub:"Costs before that date are start-up costs, not immediate deductions. With e-commerce launching Aug 25 and the store Oct 1, this date needs to be decided, not discovered later.",owner:"CPA",start:"2026-08-12",due:"2026-08-20",priority:"High"},
+{id:"LE-20",phase:"LE",category:"Tax Elections & Planning",task:"Adopt a written accountable plan for member and employee reimbursements",sub:"Mileage, sourcing travel, home-office and supplies reimbursed under a compliant plan are deductible to the LLC and non-taxable to the recipient. Without one, reimbursements become taxable income.",owner:"CPA",start:"2026-08-12",due:"2026-08-20",priority:"Medium"},
+{id:"LE-21",phase:"LE",category:"Tax Elections & Planning",task:"Elect small-business taxpayer inventory treatment",sub:"Well under the gross-receipts threshold, so you can avoid full UNICAP/§263A and use a simplified inventory method. Materially reduces year-end accounting effort.",owner:"CPA",start:"2026-08-12",due:"2026-08-20",priority:"Medium"},
+{id:"LE-22",phase:"LE",category:"Tax Elections & Planning",task:"Adopt calendar tax year and confirm the accounting method",sub:"Calendar year plus accrual or cash as appropriate. Align the e-commerce platform, POS and bookkeeping to the same basis from day one.",owner:"CPA",start:"2026-08-12",due:"2026-08-20",priority:"Low"},
+{id:"LE-23",phase:"LE",category:"Tax Elections & Planning",task:"If operating member's equity vests — file the §83(b) election within 30 days",sub:"Hard statutory deadline from the grant date, with no relief for missing it. Only relevant if you adopt a vesting schedule, but the consequence of forgetting is severe.",owner:"CPA",start:"2026-08-14",due:"2026-08-20",priority:"High"},
+
+// ========== LEASE STRATEGY (UNSIGNED) ==========
+{id:"LE-24",phase:"LE",category:"Lease Strategy (Not Yet Signed)",task:"Do NOT sign the lease personally — form the LLC first and sign as the entity",sub:"The lease is still unsigned, which is a significant advantage. A personally signed lease sits outside the liability shield entirely and exposes you to the full remaining term.",owner:"Founder",start:"2026-08-06",due:"2026-08-14",priority:"High"},
+{id:"LE-25",phase:"LE",category:"Lease Strategy (Not Yet Signed)",task:"Negotiate the personal guarantee — cap it rather than accepting an open-ended one",sub:"Landlords usually demand a PG from a new entity. Push for a capped amount, a 'good guy' clause allowing clean exit on notice, or burn-off after 12–24 months of on-time payment.",owner:"Attorney",start:"2026-08-10",due:"2026-08-22",priority:"High"},
+{id:"LE-26",phase:"LE",category:"Lease Strategy (Not Yet Signed)",task:"Negotiate rent abatement covering the fit-out period",sub:"You will be paying for construction before earning a dollar of store revenue. Free rent during fit-out is standard and directly extends runway.",owner:"Founder",start:"2026-08-10",due:"2026-08-22",priority:"High"},
+{id:"LE-27",phase:"LE",category:"Lease Strategy (Not Yet Signed)",task:"Structure any tenant improvement allowance deliberately with the CPA",sub:"Whether a TI allowance is taxable income, a §110 qualified lessee construction allowance, or a rent reduction changes both the tax result and who owns the improvements. Settle it in the lease language.",owner:"CPA",start:"2026-08-12",due:"2026-08-24",priority:"High"},
+{id:"LE-28",phase:"LE",category:"Lease Strategy (Not Yet Signed)",task:"Confirm zoning and permitted use in writing before signing",sub:"Verify retail use — and fragrance/cosmetic sales specifically — are permitted at the address, and that the landlord's use clause is broad enough to cover the full product range.",owner:"Founder",start:"2026-08-08",due:"2026-08-18",priority:"High"},
+{id:"LE-29",phase:"LE",category:"Lease Strategy (Not Yet Signed)",task:"Attorney review of the full lease before execution",sub:"CAM charges, escalations, assignment and sublet rights, exclusivity, holdover, restoration obligations at exit. Restoration clauses in particular can be very expensive years later.",owner:"Attorney",start:"2026-08-14",due:"2026-08-26",priority:"High"},
+
+// ========== FORMATION MECHANICS ==========
+{id:"LE-30",phase:"LE",category:"LLC Formation",task:"Check name availability in the Illinois SOS database",sub:"Confirms entity registration only — it says nothing about trademark rights. Run both checks (see LE-40).",owner:"Founder",start:"2026-08-06",due:"2026-08-08",priority:"High"},
+{id:"LE-31",phase:"LE",category:"LLC Formation",task:"Appoint registered agent",sub:"Physical Illinois street address, available business hours. Using your own address puts it on public record.",owner:"Founder",start:"2026-08-07",due:"2026-08-10",priority:"High"},
+{id:"LE-32",phase:"LE",category:"LLC Formation",task:"File Articles of Organization — pay $250 for 24-hour expedited, not $150 standard",sub:"Standard runs 5–10 business days. The bank account, EIN and payment processor all queue behind this, and the lease should be signed by the entity. The extra $100 buys back roughly a week.",owner:"Founder",start:"2026-08-10",due:"2026-08-13",priority:"High"},
+{id:"LE-33",phase:"LE",category:"LLC Formation",task:"Obtain EIN from the IRS",sub:"Free, online, issued immediately. As a green card holder with an SSN the operating member can apply online — no Form SS-4 by fax or the delays a foreign responsible party would face.",owner:"Founder",start:"2026-08-13",due:"2026-08-14",priority:"High"},
+{id:"LE-34",phase:"LE",category:"LLC Formation",task:"Manager-managed structure declared in the Articles",sub:"With three passive investors, member-managed would let any of them bind the company. Declare manager-managed at filing rather than fixing it later.",owner:"Founder",start:"2026-08-08",due:"2026-08-13",priority:"High"},
+{id:"LE-35",phase:"LE",category:"LLC Formation",task:"Operating agreement drafted and signed by all four members",sub:"Must cover: manager authority and spending limits, major-decision list, profit/loss allocations, preferred return, mandatory tax distributions, buy-sell terms, transfer restrictions.",owner:"Attorney",start:"2026-08-13",due:"2026-08-22",priority:"High"},
+{id:"LE-36",phase:"LE",category:"LLC Formation",task:"Include a mandatory tax distribution clause in the operating agreement",sub:"Members owe tax on allocated profit whether or not cash is distributed. Reinvest everything into inventory and three investors receive tax bills with no cash to pay them.",owner:"Attorney",start:"2026-08-13",due:"2026-08-22",priority:"High"},
+{id:"LE-37",phase:"LE",category:"LLC Formation",task:"Calendar the Illinois annual report — $75, due the 1st of your formation anniversary month",sub:"Set a recurring reminder 60 days ahead; Illinois permits early filing.",owner:"Founder",start:"2026-08-16",due:"2026-08-20",priority:"Low"},
+
+// ========== TAX REGISTRATIONS & CASH ==========
+{id:"LE-38",phase:"LE",category:"Registrations & Cash Management",task:"Register with the Illinois Department of Revenue for sales tax (MyTax Illinois, Form REG-1)",sub:"Required before your first sale — including the very first online order.",owner:"Founder",start:"2026-08-14",due:"2026-08-19",priority:"High"},
+{id:"LE-39",phase:"LE",category:"Registrations & Cash Management",task:"Confirm the combined Lombard / DuPage sales tax rate and destination-sourcing rules",sub:"Illinois retailers' occupation tax plus local components. In-store and shipped orders can source differently — configure the platform and POS accordingly.",owner:"CPA",start:"2026-08-14",due:"2026-08-20",priority:"High"},
+{id:"LE-40",phase:"LE",category:"Registrations & Cash Management",task:"USPTO trademark clearance on the name — separate from the SOS name check",sub:"State entity availability does not grant the right to use a name commercially. Clearing this after signage, packaging and domain spend is how rebrands happen.",owner:"Attorney",start:"2026-08-08",due:"2026-08-18",priority:"High"},
+{id:"LE-41",phase:"LE",category:"Registrations & Cash Management",task:"Cover the operating member's LLC tax through increased W-2 withholding instead of quarterly estimates",sub:"Withholding is treated as paid evenly across the year, so raising it can cure an underpayment that quarterly estimates would penalise. A real advantage of having the day job.",owner:"CPA",start:"2026-08-14",due:"2026-08-20",priority:"Medium"},
+{id:"LE-42",phase:"LE",category:"Registrations & Cash Management",task:"Set the investors' quarterly estimated tax calendar and the tax-distribution formula",sub:"Investors without withholding will need estimates once the business is profitable. Tie the formula to the operating agreement clause in LE-36.",owner:"CPA",start:"2026-08-14",due:"2026-08-20",priority:"Medium"},
+{id:"LE-43",phase:"LE",category:"Registrations & Cash Management",task:"Open the business bank account and stop all personal commingling",sub:"Needs EIN plus Articles. Commingling is the most common reason courts disregard the liability shield.",owner:"Founder",start:"2026-08-14",due:"2026-08-18",priority:"High"},
+{id:"LE-44",phase:"LE",category:"Registrations & Cash Management",task:"Log every pre-formation expense already incurred, with receipts and payer",sub:"Pre-formation spending can generally be treated as capital contributions or start-up costs — but only if documented at the time. Reconstructing it later rarely survives review.",owner:"Founder",start:"2026-08-06",due:"2026-08-14",priority:"High"},
+{id:"LE-45",phase:"LE",category:"Registrations & Cash Management",task:"Engage the CPA and stand up bookkeeping before the first transaction",sub:"Chart of accounts, inventory tracking, sales tax mapping, and the §469 time log all need to exist before money starts moving.",owner:"Founder",start:"2026-08-08",due:"2026-08-18",priority:"High"},
+
+// ========== COMPLIANCE & RISK ==========
+{id:"LE-46",phase:"LE",category:"Compliance & Risk",task:"Legal review of designer-inspired fragrance naming and marketing claims",sub:"How these are named and described determines trademark exposure. The highest-risk item in the whole plan — get written guidance before any product copy goes live.",owner:"Attorney",start:"2026-08-08",due:"2026-08-18",priority:"High"},
+{id:"LE-47",phase:"LE",category:"Compliance & Risk",task:"FDA cosmetics obligations for perfumes and attars (MoCRA facility registration and product listing)",sub:"Fragrances are regulated cosmetics in the U.S. Assess registration, listing and adverse-event obligations before selling.",owner:"Procurement",start:"2026-08-10",due:"2026-08-20",priority:"High"},
+{id:"LE-48",phase:"LE",category:"Compliance & Risk",task:"Confirm U.S. import and customs requirements for perfume and oud shipments",sub:"Duty classification, documentation, and any restrictions on alcohol-content fragrances entering the U.S.",owner:"Procurement",start:"2026-08-08",due:"2026-08-18",priority:"High"},
+{id:"LE-49",phase:"LE",category:"Compliance & Risk",task:"Confirm hazmat / ORM-D carrier rules for alcohol-based fragrances",sub:"Many carriers restrict air transport of alcohol-based fragrance. Confirm before advertising shipping speeds or nationwide delivery.",owner:"Web/Marketing",start:"2026-08-10",due:"2026-08-19",priority:"High"},
+{id:"LE-50",phase:"LE",category:"Compliance & Risk",task:"Bind insurance: general liability, product liability, property, business interruption, cyber",sub:"Product liability is essential for anything applied to skin. Ensure the LLC — not an individual — is the named insured, and that cover meets the lease requirements.",owner:"Founder",start:"2026-08-12",due:"2026-08-20",priority:"High"},
+
+// ================= E-COMMERCE =================
+{id:"EC-01",phase:"EC",category:"Brand & Setup",task:"Finalize brand identity (logo, colours, packaging)",sub:"",owner:"Founder",start:"2026-08-06",due:"2026-08-10",priority:"High"},
+{id:"EC-02",phase:"EC",category:"Brand & Setup",task:"Purchase domain and configure DNS",sub:"",owner:"Web/Marketing",start:"2026-08-06",due:"2026-08-08",priority:"High"},
+{id:"EC-03",phase:"EC",category:"Brand & Setup",task:"Set up payment processor / merchant account",sub:"Requires EIN and the business bank account — sits directly behind the LLC filing.",owner:"Founder",start:"2026-08-18",due:"2026-08-21",priority:"High"},
+{id:"EC-04",phase:"EC",category:"Brand & Setup",task:"Set up Google Business Profile for the Lombard location",sub:"",owner:"Web/Marketing",start:"2026-08-15",due:"2026-08-24",priority:"Medium"},
+
+{id:"EC-05",phase:"EC",category:"Sourcing & Inventory",task:"Finalize suppliers: Middle Eastern clothing (thobes, jalabiyas, bishts)",sub:"",owner:"Procurement",start:"2026-08-06",due:"2026-08-10",priority:"High"},
+{id:"EC-06",phase:"EC",category:"Sourcing & Inventory",task:"Finalize suppliers: perfumes and designer-inspired fragrances",sub:"",owner:"Procurement",start:"2026-08-06",due:"2026-08-10",priority:"High"},
+{id:"EC-07",phase:"EC",category:"Sourcing & Inventory",task:"Finalize suppliers: oud oils and attars",sub:"",owner:"Procurement",start:"2026-08-06",due:"2026-08-10",priority:"High"},
+{id:"EC-08",phase:"EC",category:"Sourcing & Inventory",task:"Negotiate pricing, MOQs and payment terms",sub:"",owner:"Procurement",start:"2026-08-08",due:"2026-08-13",priority:"High"},
+{id:"EC-09",phase:"EC",category:"Sourcing & Inventory",task:"Place initial inventory purchase order — through the LLC account, not personally",sub:"Wait for the business bank account if at all possible. Personal purchases later reimbursed complicate both the books and the liability shield.",owner:"Procurement",start:"2026-08-14",due:"2026-08-17",priority:"High"},
+{id:"EC-10",phase:"EC",category:"Sourcing & Inventory",task:"Confirm supplier lead times and delivery",sub:"",owner:"Procurement",start:"2026-08-10",due:"2026-08-16",priority:"High"},
+{id:"EC-11",phase:"EC",category:"Sourcing & Inventory",task:"Quality check and receive first inventory shipment",sub:"",owner:"Procurement",start:"2026-08-17",due:"2026-08-21",priority:"High"},
+{id:"EC-12",phase:"EC",category:"Sourcing & Inventory",task:"Build SKU list, sizing/scent notes and pricing sheet",sub:"",owner:"Procurement",start:"2026-08-12",due:"2026-08-17",priority:"Medium"},
+{id:"EC-13",phase:"EC",category:"Sourcing & Inventory",task:"Product photography (flat-lay and lifestyle)",sub:"",owner:"Web/Marketing",start:"2026-08-14",due:"2026-08-19",priority:"High"},
+{id:"EC-14",phase:"EC",category:"Sourcing & Inventory",task:"Write product descriptions with compliant cosmetic labeling",sub:"Ingredient lists, net quantity and responsible-party details for all fragrance products.",owner:"Web/Marketing",start:"2026-08-15",due:"2026-08-21",priority:"Medium"},
+
+{id:"EC-15",phase:"EC",category:"E-commerce Platform",task:"Choose e-commerce platform",sub:"",owner:"Web/Marketing",start:"2026-08-06",due:"2026-08-08",priority:"High"},
+{id:"EC-16",phase:"EC",category:"E-commerce Platform",task:"Store setup: theme, homepage, navigation",sub:"",owner:"Web/Marketing",start:"2026-08-08",due:"2026-08-14",priority:"High"},
+{id:"EC-17",phase:"EC",category:"E-commerce Platform",task:"Upload product catalog and categories",sub:"",owner:"Web/Marketing",start:"2026-08-17",due:"2026-08-21",priority:"High"},
+{id:"EC-18",phase:"EC",category:"E-commerce Platform",task:"Integrate payment processor into the store",sub:"",owner:"Web/Marketing",start:"2026-08-21",due:"2026-08-23",priority:"High"},
+{id:"EC-19",phase:"EC",category:"E-commerce Platform",task:"Configure shipping zones, rates and carriers with fragrance restrictions applied",sub:"",owner:"Web/Marketing",start:"2026-08-14",due:"2026-08-20",priority:"High"},
+{id:"EC-20",phase:"EC",category:"E-commerce Platform",task:"Configure Illinois sales tax collection and multi-state nexus monitoring",sub:"Shipping nationwide can create economic nexus in other states once their thresholds are crossed. Set up monitoring now rather than discovering it at year end.",owner:"Web/Marketing",start:"2026-08-16",due:"2026-08-21",priority:"High"},
+{id:"EC-21",phase:"EC",category:"E-commerce Platform",task:"Publish legal pages: returns, privacy, terms, shipping policy",sub:"",owner:"Founder",start:"2026-08-15",due:"2026-08-21",priority:"Medium"},
+{id:"EC-22",phase:"EC",category:"E-commerce Platform",task:"Mobile responsiveness and speed check",sub:"",owner:"Web/Marketing",start:"2026-08-19",due:"2026-08-22",priority:"Medium"},
+{id:"EC-23",phase:"EC",category:"E-commerce Platform",task:"Set up order and inventory management with notifications",sub:"",owner:"Web/Marketing",start:"2026-08-16",due:"2026-08-21",priority:"Medium"},
+{id:"EC-24",phase:"EC",category:"E-commerce Platform",task:"Full checkout QA — test orders, payment, tax calculation, shipping",sub:"",owner:"Web/Marketing",start:"2026-08-21",due:"2026-08-24",priority:"High"},
+
+{id:"EC-25",phase:"EC",category:"Marketing & Launch Prep",task:"Create Instagram and TikTok business accounts",sub:"",owner:"Web/Marketing",start:"2026-08-06",due:"2026-08-08",priority:"Medium"},
+{id:"EC-26",phase:"EC",category:"Marketing & Launch Prep",task:"Build launch content calendar",sub:"",owner:"Web/Marketing",start:"2026-08-08",due:"2026-08-12",priority:"Medium"},
+{id:"EC-27",phase:"EC",category:"Marketing & Launch Prep",task:"Shoot teaser and reels content",sub:"",owner:"Web/Marketing",start:"2026-08-14",due:"2026-08-20",priority:"Medium"},
+{id:"EC-28",phase:"EC",category:"Marketing & Launch Prep",task:"Micro-influencer outreach (U.S. fashion and fragrance niche)",sub:"",owner:"Web/Marketing",start:"2026-08-12",due:"2026-08-22",priority:"Medium"},
+{id:"EC-29",phase:"EC",category:"Marketing & Launch Prep",task:"Build email and SMS launch waitlist",sub:"",owner:"Web/Marketing",start:"2026-08-10",due:"2026-08-24",priority:"Low"},
+{id:"EC-30",phase:"EC",category:"Marketing & Launch Prep",task:"Plan launch-day promotion",sub:"",owner:"Web/Marketing",start:"2026-08-18",due:"2026-08-24",priority:"Medium"},
+{id:"EC-31",phase:"EC",category:"Marketing & Launch Prep",task:"Prepare launch announcement and press note",sub:"",owner:"Web/Marketing",start:"2026-08-20",due:"2026-08-24",priority:"Low"},
+
+{id:"EC-32",phase:"EC",category:"Go-Live",task:"Decision point: full launch, or apparel-first soft launch?",sub:"Clothing carries none of the FDA cosmetics or hazmat shipping complications. Launching apparel on 25 Aug and adding fragrance once compliance clears protects the date without regulatory risk.",owner:"Founder",start:"2026-08-18",due:"2026-08-21",priority:"High"},
+{id:"EC-33",phase:"EC",category:"Go-Live",task:"Final site-wide QA and mobile test",sub:"",owner:"Web/Marketing",start:"2026-08-23",due:"2026-08-24",priority:"High"},
+{id:"EC-34",phase:"EC",category:"Go-Live",task:"Soft launch to friends and family for live test orders",sub:"",owner:"Founder",start:"2026-08-23",due:"2026-08-24",priority:"Medium"},
+{id:"EC-35",phase:"EC",category:"Go-Live",task:"Public e-commerce launch",sub:"",owner:"Founder",start:"2026-08-25",due:"2026-08-25",priority:"High"},
+
+// ================= BOUTIQUE =================
+{id:"BQ-01",phase:"BQ",category:"Permits & Village Approvals",task:"Confirm with Village: is the 10-day review calendar days or business days?",sub:"Village advised ~10 days currently, well under their published 4–6 week peak-season figure. The distinction moves your permit submission deadline by two weeks — confirm before planning around it.",owner:"Founder",start:"2026-08-07",due:"2026-08-10",priority:"High"},
+{id:"BQ-02",phase:"BQ",category:"Permits & Village Approvals",task:"Walk the space and map every existing electrical outlet, panel and plumbing location",sub:"Village confirmed no permit for cosmetic work, but permits ARE required for electrical, plumbing, walls and HVAC — and specifically for adding new outlets. Designing to existing service locations can keep large parts of the build permit-free.",owner:"Founder",start:"2026-08-07",due:"2026-08-11",priority:"High"},
+{id:"BQ-03",phase:"BQ",category:"Permits & Village Approvals",task:"Decide the scope split: what stays cosmetic vs what needs a permit",sub:"Cosmetic (paint, wall coverings, floor coverings, freestanding fixtures) needs no permit. Anything touching electrical, plumbing, walls or HVAC does. Consider phasing — open on cosmetic work, permit the rest after.",owner:"Founder",start:"2026-08-10",due:"2026-08-13",priority:"High"},
+{id:"BQ-04",phase:"BQ",category:"Permits & Village Approvals",task:"Confirm zoning and permitted use for retail at the address",sub:"Planning Services 630-620-5749. Confirm fragrance/cosmetic retail is permitted and whether change-of-use applies given the previous tenant.",owner:"Founder",start:"2026-08-07",due:"2026-08-14",priority:"High"},
+{id:"BQ-05",phase:"BQ",category:"Permits & Village Approvals",task:"Confirm whether a Village business license is required — licensing 630-620-5913",sub:"",owner:"Founder",start:"2026-08-10",due:"2026-08-18",priority:"High"},
+{id:"BQ-06",phase:"BQ",category:"Permits & Village Approvals",task:"Register your contractor with the Village Building Division",sub:"Contractor requirements must be ON FILE before any permit can be issued. This is a hard prerequisite people discover late — start it the day you select a contractor.",owner:"Founder",start:"2026-08-14",due:"2026-08-19",priority:"High"},
+{id:"BQ-07",phase:"BQ",category:"Permits & Village Approvals",task:"Submit build/remodel permit application with scaled drawings and plat of survey",sub:"Submittal needs the application, plat of survey with work location marked, and drawings to scale. Everything downstream waits on this — submit by 18 Aug at the latest.",owner:"Founder",start:"2026-08-17",due:"2026-08-19",priority:"High"},
+{id:"BQ-08",phase:"BQ",category:"Permits & Village Approvals",task:"Permit under Village review — do not start permitted work until issued",sub:"~10 days per the Village. Cosmetic work can proceed in parallel. Starting permitted work early risks a stop-work order and tearing out finished work.",owner:"Founder",start:"2026-08-19",due:"2026-09-02",priority:"High"},
+{id:"BQ-09",phase:"BQ",category:"Permits & Village Approvals",task:"Apply for Certificate of Occupancy — Building Division 630-620-5750",sub:"Required for all new businesses and new locations before opening. Ask whether it can run in parallel with the build permit.",owner:"Founder",start:"2026-08-19",due:"2026-09-16",priority:"High"},
+{id:"BQ-10",phase:"BQ",category:"Permits & Village Approvals",task:"Fire Prevention: confirm requirements for storing alcohol-based fragrances and oils",sub:"Fire Prevention 630-620-5750. Ask about quantity limits, storage, and any suppression requirement — and raise the perfume counter and scent diffusion design before it's built.",owner:"Founder",start:"2026-08-10",due:"2026-08-21",priority:"High"},
+{id:"BQ-11",phase:"BQ",category:"Permits & Village Approvals",task:"Fire inspection and life-safety sign-off",sub:"Village uses a Life Safety Fire Inspection Checklist — request a copy early and build to it rather than remediating after.",owner:"Founder",start:"2026-09-14",due:"2026-09-25",priority:"High"},
+{id:"BQ-12",phase:"BQ",category:"Permits & Village Approvals",task:"Apply for sign permit from the Village of Lombard",sub:"Separate from the build permit.",owner:"Founder",start:"2026-09-01",due:"2026-09-15",priority:"Medium"},
+
+{id:"BQ-13",phase:"BQ",category:"Accessibility (ADA + Illinois)",task:"Federal ADA Title III review — the Village does NOT enforce this",sub:"Your boutique is a public accommodation. This obligation exists whether or not you pull a permit, and it's enforced through private lawsuits and the DOJ — not building inspections. Passing a Village inspection gives you no protection here.",owner:"Attorney",start:"2026-08-10",due:"2026-08-28",priority:"High"},
+{id:"BQ-14",phase:"BQ",category:"Accessibility (ADA + Illinois)",task:"Illinois Accessibility Code compliance built into the drawings",sub:"IAC sits under the Environmental Barriers Act, has force of law, and is enforced by the Illinois Attorney General. Alterations must meet the Code version in effect when work begins — so it attaches the moment you do permitted work.",owner:"Retail Ops",start:"2026-08-10",due:"2026-08-19",priority:"High"},
+{id:"BQ-15",phase:"BQ",category:"Accessibility (ADA + Illinois)",task:"Engage an accessibility consultant or confirm the designer covers both codes",sub:"Village staff were unsure on ADA because most of it isn't their department. Don't rely on them — get it right in the drawings rather than at inspection.",owner:"Founder",start:"2026-08-08",due:"2026-08-15",priority:"High"},
+{id:"BQ-16",phase:"BQ",category:"Accessibility (ADA + Illinois)",task:"Verify the pressure points: entrance, door widths, aisle clearance, fitting rooms, counter height",sub:"The usual failure points for a boutique. Cheaper to design in than to rebuild.",owner:"Retail Ops",start:"2026-08-14",due:"2026-08-28",priority:"High"},
+
+{id:"BQ-17",phase:"BQ",category:"Design & Drawings (CRITICAL PATH)",task:"Engage a designer or architect this week — drawings are now the bottleneck",sub:"The permit needs scaled drawings and a plat of survey. At ~10 days review, everything downstream depends on drawings being finished by mid-August. This is the single most urgent boutique task.",owner:"Founder",start:"2026-08-07",due:"2026-08-11",priority:"High"},
+{id:"BQ-18",phase:"BQ",category:"Design & Drawings (CRITICAL PATH)",task:"Finalize interior design concept and mood board including the perfume bar",sub:"Design to existing electrical and plumbing locations wherever possible — it keeps work cosmetic and permit-free.",owner:"Founder",start:"2026-08-08",due:"2026-08-13",priority:"High"},
+{id:"BQ-19",phase:"BQ",category:"Design & Drawings (CRITICAL PATH)",task:"Produce scaled drawings and obtain the plat of survey",sub:"Both required in the permit submittal, with the work location clearly marked on the plat. Ask the landlord for the plat — they usually have one.",owner:"Founder",start:"2026-08-10",due:"2026-08-17",priority:"High"},
+{id:"BQ-20",phase:"BQ",category:"Design & Drawings (CRITICAL PATH)",task:"Obtain fit-out quotes from 3 licensed contractors",sub:"Pulled forward — the contractor must be registered with the Village before a permit issues, so selection can't wait until late August.",owner:"Founder",start:"2026-08-08",due:"2026-08-14",priority:"High"},
+{id:"BQ-21",phase:"BQ",category:"Design & Drawings (CRITICAL PATH)",task:"Select contractor and sign — with the itemised-invoice requirement built in",sub:"Contract signed by the LLC, not you personally. Require an itemised invoice in the contract so the fit-out can be classified for depreciation.",owner:"Founder",start:"2026-08-14",due:"2026-08-17",priority:"High"},
+
+{id:"BQ-22",phase:"BQ",category:"Store Design & Fit-Out",task:"Cosmetic work — paint, wall coverings, floor coverings (no permit needed)",sub:"Can proceed in parallel with permit review. Confirm the exact exemption boundary with the Village before starting.",owner:"Retail Ops",start:"2026-08-20",due:"2026-09-05",priority:"High"},
+{id:"BQ-23",phase:"BQ",category:"Store Design & Fit-Out",task:"Permitted construction — electrical, plumbing, walls, HVAC",sub:"Cannot start until the permit is issued. Village confirmed these four categories all require one, including adding new outlets.",owner:"Retail Ops",start:"2026-09-02",due:"2026-09-21",priority:"High"},
+{id:"BQ-24",phase:"BQ",category:"Store Design & Fit-Out",task:"Install fixtures: clothing racks, perfume counter, oud bar",sub:"",owner:"Retail Ops",start:"2026-09-16",due:"2026-09-25",priority:"High"},
+{id:"BQ-25",phase:"BQ",category:"Store Design & Fit-Out",task:"Signage design (Arabic/English) and Village approval",sub:"",owner:"Web/Marketing",start:"2026-09-01",due:"2026-09-10",priority:"Medium"},
+{id:"BQ-26",phase:"BQ",category:"Store Design & Fit-Out",task:"Signage manufacture and installation",sub:"",owner:"Retail Ops",start:"2026-09-10",due:"2026-09-24",priority:"Medium"},
+{id:"BQ-27",phase:"BQ",category:"Store Design & Fit-Out",task:"Furniture, mirrors, seating and décor procurement",sub:"Freestanding items are cosmetic — no permit, and can be ordered early.",owner:"Retail Ops",start:"2026-08-20",due:"2026-09-18",priority:"Medium"},
+{id:"BQ-28",phase:"BQ",category:"Store Design & Fit-Out",task:"Lighting and scent-diffusion ambiance setup",sub:"Note: changing light fixtures may trigger the electrical permit — confirm scope with the Village.",owner:"Retail Ops",start:"2026-09-16",due:"2026-09-25",priority:"Low"},
+
+{id:"BQ-29",phase:"BQ",category:"Fit-Out Tax & Depreciation",task:"Classify every fit-out dollar before construction begins",sub:"Qualified Improvement Property vs §1245 personal property vs structural. Classification drives whether the deduction lands this year or over 39 years.",owner:"CPA",start:"2026-08-17",due:"2026-09-02",priority:"High"},
+{id:"BQ-30",phase:"BQ",category:"Fit-Out Tax & Depreciation",task:"Model 100% bonus depreciation on QIP, fixtures and equipment",sub:"100% bonus is permanent for qualifying property acquired after 19 Jan 2025, with no dollar cap. Potentially a very large first-year deduction.",owner:"CPA",start:"2026-08-20",due:"2026-09-10",priority:"High"},
+{id:"BQ-31",phase:"BQ",category:"Fit-Out Tax & Depreciation",task:"Compare §179 expensing against bonus depreciation",sub:"2026 §179 cap is $2.56M with a $4.09M phase-out. §179 is limited by business income; bonus is not — which matters when losses may already be constrained by §469.",owner:"CPA",start:"2026-08-22",due:"2026-09-10",priority:"Medium"},
+{id:"BQ-32",phase:"BQ",category:"Fit-Out Tax & Depreciation",task:"Decide whether a cost segregation study is worth it at this spend level",sub:"Often not justified on a small fit-out, but a simplified asset-by-asset breakdown from the contractor's invoice achieves much of the benefit at no extra cost.",owner:"CPA",start:"2026-09-01",due:"2026-09-15",priority:"Medium"},
+{id:"BQ-33",phase:"BQ",category:"Fit-Out Tax & Depreciation",task:"Track placed-in-service dates for every asset",sub:"Deductions attach to the year an asset is placed in service, not the year it was paid for. With an Oct 1 opening, most of the fit-out should land in the 2026 tax year.",owner:"CPA",start:"2026-09-14",due:"2026-10-01",priority:"High"},
+
+{id:"BQ-34",phase:"BQ",category:"Inventory & Operations",task:"Place the larger in-store inventory order",sub:"",owner:"Procurement",start:"2026-09-01",due:"2026-09-15",priority:"High"},
+{id:"BQ-35",phase:"BQ",category:"Inventory & Operations",task:"Receive and QC in-store inventory",sub:"",owner:"Procurement",start:"2026-09-15",due:"2026-09-22",priority:"High"},
+{id:"BQ-36",phase:"BQ",category:"Inventory & Operations",task:"Select and install POS with Illinois tax rates configured",sub:"",owner:"Retail Ops",start:"2026-09-05",due:"2026-09-16",priority:"High"},
+{id:"BQ-37",phase:"BQ",category:"Inventory & Operations",task:"Sync inventory between store and e-commerce",sub:"",owner:"Web/Marketing",start:"2026-09-10",due:"2026-09-20",priority:"Medium"},
+{id:"BQ-38",phase:"BQ",category:"Inventory & Operations",task:"Write store operations manual and SOPs",sub:"Especially important where the operating member holds a full-time job — the store must run without them present for much of the week.",owner:"Founder",start:"2026-09-08",due:"2026-09-22",priority:"High"},
+{id:"BQ-39",phase:"BQ",category:"Inventory & Operations",task:"Install security: CCTV, alarm, tagging",sub:"",owner:"Retail Ops",start:"2026-09-10",due:"2026-09-24",priority:"Medium"},
+{id:"BQ-40",phase:"BQ",category:"Inventory & Operations",task:"Set up store WiFi and back-office systems",sub:"",owner:"Retail Ops",start:"2026-09-15",due:"2026-09-23",priority:"Low"},
+
+{id:"BQ-41",phase:"BQ",category:"Staffing",task:"Define roles — assume the operating member is NOT available during weekday business hours",sub:"A full-time job means store coverage cannot depend on the founder. This likely means a genuine store manager rather than a senior sales associate.",owner:"Founder",start:"2026-08-20",due:"2026-08-28",priority:"High"},
+{id:"BQ-42",phase:"BQ",category:"Staffing",task:"Set up payroll, workers' compensation and Illinois new-hire reporting",sub:"Workers' comp is required in Illinois once you have employees.",owner:"CPA",start:"2026-08-28",due:"2026-09-14",priority:"High"},
+{id:"BQ-43",phase:"BQ",category:"Staffing",task:"Recruit and interview store staff",sub:"",owner:"Founder",start:"2026-08-28",due:"2026-09-15",priority:"High"},
+{id:"BQ-44",phase:"BQ",category:"Staffing",task:"Hire and onboard the store manager (I-9, W-4, offer letter)",sub:"",owner:"Founder",start:"2026-09-05",due:"2026-09-16",priority:"High"},
+{id:"BQ-45",phase:"BQ",category:"Staffing",task:"Hire and onboard sales associates",sub:"",owner:"Founder",start:"2026-09-10",due:"2026-09-21",priority:"High"},
+{id:"BQ-46",phase:"BQ",category:"Staffing",task:"Product training: fabrics, oud and attar knowledge, fragrance families",sub:"",owner:"Founder",start:"2026-09-20",due:"2026-09-27",priority:"High"},
+{id:"BQ-47",phase:"BQ",category:"Staffing",task:"Customer service and POS training",sub:"",owner:"Retail Ops",start:"2026-09-22",due:"2026-09-28",priority:"Medium"},
+{id:"BQ-48",phase:"BQ",category:"Staffing",task:"Order staff uniforms",sub:"",owner:"Retail Ops",start:"2026-09-10",due:"2026-09-25",priority:"Low"},
+
+{id:"BQ-49",phase:"BQ",category:"Marketing for Boutique Launch",task:"Local marketing plan — DuPage County outreach and community partnerships",sub:"",owner:"Web/Marketing",start:"2026-09-01",due:"2026-09-20",priority:"Medium"},
+{id:"BQ-50",phase:"BQ",category:"Marketing for Boutique Launch",task:"Plan the grand opening event",sub:"",owner:"Web/Marketing",start:"2026-09-05",due:"2026-09-25",priority:"Medium"},
+{id:"BQ-51",phase:"BQ",category:"Marketing for Boutique Launch",task:"Press and media invitations (Chicago-area outlets)",sub:"",owner:"Web/Marketing",start:"2026-09-15",due:"2026-09-25",priority:"Low"},
+{id:"BQ-52",phase:"BQ",category:"Marketing for Boutique Launch",task:"Opening week promotions and offers",sub:"",owner:"Web/Marketing",start:"2026-09-20",due:"2026-10-01",priority:"Medium"},
+{id:"BQ-53",phase:"BQ",category:"Marketing for Boutique Launch",task:"Social countdown and teaser campaign",sub:"",owner:"Web/Marketing",start:"2026-09-15",due:"2026-09-30",priority:"Medium"},
+
+{id:"BQ-54",phase:"BQ",category:"Go-Live",task:"Final store walkthrough and compliance check",sub:"",owner:"Founder",start:"2026-09-28",due:"2026-09-29",priority:"High"},
+{id:"BQ-55",phase:"BQ",category:"Go-Live",task:"Soft opening for friends, family and VIPs",sub:"",owner:"Founder",start:"2026-09-30",due:"2026-09-30",priority:"Medium"},
+{id:"BQ-56",phase:"BQ",category:"Go-Live",task:"Grand opening",sub:"",owner:"Founder",start:"2026-10-01",due:"2026-10-01",priority:"High"},
+];
+
+const PHASES = [
+  {key:"LE", label:"Legal, Tax & Entity", short:"Legal/Tax", due:"2026-08-20", dueLabel:"20 Aug 2026"},
+  {key:"EC", label:"E-commerce Launch",   short:"E-comm",    due:"2026-08-25", dueLabel:"25 Aug 2026"},
+  {key:"BQ", label:"Boutique Opening",    short:"Boutique",  due:"2026-10-01", dueLabel:"1 Oct 2026"}
+];
+
+const STORE_KEY = "naj_tracker_state_v3";
+const DEFAULT_STATUS = "Not Started";
+
+function loadState(){
+  try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }
+  catch(e){ return {}; }
+}
+function saveState(s){
+  if(window.NAJ && window.NAJ.shared){ window.NAJ.writeAll(s); return; }
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(e){}
+}
+var state = loadState();
+
+function getTaskState(id, orig){
+  const s = state[id] || {};
+  return {
+    status: s.status || DEFAULT_STATUS,
+    owner: (s.owner !== undefined) ? s.owner : orig.owner,
+    notes: s.notes || ""
+  };
+}
+function setTaskState(id, patch){
+  state[id] = Object.assign({}, state[id]||{}, patch);
+  if(window.NAJ && window.NAJ.shared){ window.NAJ.writeTask(id, patch); return; }
+  saveState(state);
+}
+
+function todayISO(){
+  const d = new Date();
+  return new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+}
+function daysBetween(a,b){
+  return Math.round((new Date(b+"T00:00:00") - new Date(a+"T00:00:00"))/86400000);
+}
+function esc(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+function escAttr(s){
+  return esc(s).replace(/"/g,"&quot;");
+}
+function phaseShort(k){ const p=PHASES.find(x=>x.key===k); return p?p.short:k; }
+function phaseLabel(k){ const p=PHASES.find(x=>x.key===k); return p?p.label:k; }
+
+function ownerFlag(owner){
+  if(owner === "CPA")      return ' <span class="flag cpa">CPA</span>';
+  if(owner === "Attorney") return ' <span class="flag atty">ATTORNEY</span>';
+  return '';
+}
+
+function renderCountdowns(){
+  const today = todayISO();
+  document.getElementById("countdowns").innerHTML = PHASES.map(p=>{
+    const list = TASKS.filter(t=>t.phase===p.key);
+    const done = list.filter(t=>getTaskState(t.id,t).status==="Done").length;
+    const pct  = list.length ? Math.round(100*done/list.length) : 0;
+    const d    = daysBetween(today, p.due);
+    const txt  = d > 0 ? d+" days left" : d === 0 ? "Due today" : Math.abs(d)+" days overdue";
+    return `
+      <div class="cd-card">
+        <div class="label">${esc(p.label)}</div>
+        <div class="days">${txt}</div>
+        <div class="date">Target: ${p.dueLabel}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+        <div class="pct">${done}/${list.length} tasks done (${pct}%)</div>
+      </div>`;
+  }).join("");
+}
+
+function populateFilters(){
+  const catSel = document.getElementById("f-category");
+  [...new Set(TASKS.map(t=>t.category))].forEach(c=>{
+    const o=document.createElement("option"); o.value=c; o.textContent=c; catSel.appendChild(o);
+  });
+  const ownerSel = document.getElementById("f-owner");
+  [...new Set(TASKS.map(t=>t.owner))].forEach(o=>{
+    const opt=document.createElement("option"); opt.value=o; opt.textContent=o; ownerSel.appendChild(opt);
+  });
+}
+
+function currentFilters(){
+  return {
+    timeview: document.getElementById("f-timeview").value,
+    phase:    document.getElementById("f-phase").value,
+    category: document.getElementById("f-category").value,
+    status:   document.getElementById("f-status").value,
+    owner:    document.getElementById("f-owner").value,
+    priority: document.getElementById("f-priority").value,
+    search:   document.getElementById("f-search").value.trim().toLowerCase()
+  };
+}
+
+// ---- time-based views ----
+function passesTimeView(t, ts, view, today){
+  const isDone = ts.status === "Done";
+  switch(view){
+    case "overdue":  return !isDone && t.due <  today;
+    case "today":    return !isDone && t.due === today;
+    case "active":   return !isDone && t.start <= today && t.due >= today;
+    case "focus":    return !isDone && t.due <= today;
+    case "week":     return !isDone && t.due >= today && daysBetween(today, t.due) <= 7;
+    case "upcoming": return !isDone && t.start > today;
+    case "done":     return isDone;
+    default:         return true;
+  }
+}
+
+// counts computed across ALL tasks, ignoring the current time view
+function globalCounts(){
+  const today = todayISO();
+  let overdue=0, dueToday=0, active=0, week=0, done=0;
+  TASKS.forEach(t=>{
+    const ts = getTaskState(t.id,t);
+    const d  = ts.status === "Done";
+    if(d){ done++; return; }
+    if(t.due <  today) overdue++;
+    if(t.due === today) dueToday++;
+    if(t.start <= today && t.due >= today) active++;
+    if(t.due >= today && daysBetween(today,t.due) <= 7) week++;
+  });
+  return {overdue, dueToday, active, week, done, total:TASKS.length};
+}
+
+function renderSummary(list){
+  const g = globalCounts();
+  document.getElementById("summary").innerHTML = `
+    <span class="chip showing">Showing <b>${list.length}</b> of ${g.total}</span>
+    <span class="chip act ${g.overdue?'hot':''}" data-view="overdue">🔴 Overdue <b>${g.overdue}</b></span>
+    <span class="chip act ${g.dueToday?'warm':''}" data-view="today">⭐ Due today <b>${g.dueToday}</b></span>
+    <span class="chip act" data-view="active">▶ Active today <b>${g.active}</b></span>
+    <span class="chip act" data-view="week">📅 Next 7 days <b>${g.week}</b></span>
+    <span class="chip act" data-view="done">✓ Done <b>${g.done}</b></span>
+    <span class="chip act" data-view="all">Clear view</span>`;
+
+  document.getElementById("summary").querySelectorAll(".chip.act").forEach(c=>{
+    c.addEventListener("click", ()=>{
+      document.getElementById("f-timeview").value = c.dataset.view;
+      render();
+    });
+  });
+}
+
+function fmtDate(iso){
+  return new Date(iso+"T00:00:00").toLocaleDateString("en-GB",{day:"2-digit",month:"short"});
+}
+
+function render(){
+  const f = currentFilters();
+  const today = todayISO();
+
+  const list = TASKS.filter(t=>{
+    const ts = getTaskState(t.id,t);
+    if(!passesTimeView(t, ts, f.timeview, today))     return false;
+    if(f.phase!=="all"    && t.phase!==f.phase)       return false;
+    if(f.category!=="all" && t.category!==f.category) return false;
+    if(f.status!=="all"   && ts.status!==f.status)    return false;
+    if(f.owner!=="all"    && ts.owner!==f.owner)      return false;
+    if(f.priority!=="all" && t.priority!==f.priority) return false;
+    if(f.search){
+      const hay = (t.task+" "+(t.sub||"")+" "+t.id+" "+t.category+" "+ts.owner).toLowerCase();
+      if(!hay.includes(f.search)) return false;
+    }
+    return true;
+  });
+
+  list.sort((a,b)=> a.due.localeCompare(b.due) || a.id.localeCompare(b.id));
+  renderSummary(list);
+
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML = "";
+  let lastGroup = null;
+  const grouped = (f.phase==="all" && f.category==="all");
+
+  list.forEach(t=>{
+    const ts = getTaskState(t.id,t);
+    const gk = t.phase+"|"+t.category;
+    if(grouped && gk !== lastGroup){
+      const gtr = document.createElement("tr");
+      gtr.className = "cat-group-row";
+      gtr.innerHTML = `<td colspan="10">${esc(phaseLabel(t.phase))} — ${esc(t.category)}</td>`;
+      tbody.appendChild(gtr);
+      lastGroup = gk;
+    }
+
+    const isDone    = ts.status === "Done";
+    const isOverdue = !isDone && t.due < today;
+    const isSoon    = !isDone && !isOverdue && daysBetween(today,t.due) <= 3;
+
+    const tr = document.createElement("tr");
+    tr.className = (isDone?"done ":"") + (isOverdue?"overdue":(isSoon?"soon":""));
+    tr.innerHTML = `
+      <td><input type="checkbox" ${isDone?"checked":""} data-id="${t.id}" class="chk-done"></td>
+      <td>${t.id}</td>
+      <td><span class="badge ${t.phase.toLowerCase()}">${esc(phaseShort(t.phase))}</span></td>
+      <td class="task-cell">
+        <div class="task-name">${esc(t.task)}${ownerFlag(ts.owner)}</div>
+        ${t.sub ? `<div class="task-sub">${esc(t.sub)}</div>` : ""}
+      </td>
+      <td><input type="text" class="owner-input" data-id="${t.id}" value="${escAttr(ts.owner)}"></td>
+      <td>${fmtDate(t.start)}</td>
+      <td>${fmtDate(t.due)}</td>
+      <td><span class="badge prio-${t.priority}">${t.priority}</span></td>
+      <td>
+        <select class="status-select st-${ts.status.replace(/ /g,'-')}" data-id="${t.id}">
+          <option ${ts.status==="Not Started"?"selected":""}>Not Started</option>
+          <option ${ts.status==="In Progress"?"selected":""}>In Progress</option>
+          <option ${ts.status==="Done"?"selected":""}>Done</option>
+          <option ${ts.status==="Blocked"?"selected":""}>Blocked</option>
+        </select>
+      </td>
+      <td><input type="text" class="notes-input" data-id="${t.id}" placeholder="add note..." value="${escAttr(ts.notes)}"></td>`;
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll(".chk-done").forEach(cb=>{
+    cb.addEventListener("change", e=>{
+      setTaskState(e.target.dataset.id,{status: e.target.checked ? "Done" : "Not Started"});
+      render(); renderCountdowns();
+    });
+  });
+  tbody.querySelectorAll(".status-select").forEach(s=>{
+    s.addEventListener("change", e=>{
+      setTaskState(e.target.dataset.id,{status:e.target.value});
+      render(); renderCountdowns();
+    });
+  });
+  tbody.querySelectorAll(".owner-input").forEach(i=>{
+    i.addEventListener("change", e=>{
+      setTaskState(e.target.dataset.id,{owner:e.target.value});
+      render();
+    });
+  });
+  tbody.querySelectorAll(".notes-input").forEach(i=>{
+    i.addEventListener("change", e=>{
+      setTaskState(e.target.dataset.id,{notes:e.target.value});
+    });
+  });
+}
+
+function exportCSV(){
+  const rows=[["ID","Phase","Category","Task","Detail","Owner","Start","Due","Priority","Status","Notes"]];
+  TASKS.forEach(t=>{
+    const ts=getTaskState(t.id,t);
+    rows.push([t.id, phaseLabel(t.phase), t.category, t.task, t.sub||"", ts.owner, t.start, t.due, t.priority, ts.status, ts.notes]);
+  });
+  const csv=rows.map(r=>r.map(v=>{
+    const s=String(v).replace(/"/g,'""');
+    return /[",\n]/.test(s) ? `"${s}"` : s;
+  }).join(",")).join("\n");
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url; a.download="naseer-al-jadidi-launch-tracker.csv";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+["f-timeview","f-phase","f-category","f-status","f-owner","f-priority"].forEach(id=>{
+  document.getElementById(id).addEventListener("change", render);
+});
+document.getElementById("f-search").addEventListener("input", render);
+document.getElementById("btn-export").addEventListener("click", exportCSV);
+document.getElementById("btn-reset").addEventListener("click", ()=>{
+  const shared = window.NAJ && window.NAJ.shared;
+  const msg = shared
+    ? "Reset all statuses, owner edits and notes back to defaults FOR EVERYONE? This clears the shared tracker for the whole team and cannot be undone."
+    : "Reset all statuses, owner edits and notes back to defaults? This cannot be undone.";
+  if(confirm(msg)){
+    state={}; saveState(state); render(); renderCountdowns();
+  }
+});
+
+populateFilters();
+renderCountdowns();
+render();
+</script>
+
+<!-- ============================================================
+     SHARED EDITING — Firebase Realtime Database.
+     Blank out databaseURL below to go back to a private,
+     browser-only copy.
+     ============================================================ -->
+<style>
+  .naj-chip{display:inline-flex;align-items:center;gap:7px;font-size:12px;white-space:nowrap;
+    border:1px solid var(--border);border-radius:8px;background:#fff;padding:7px 11px;color:#2e7d5b}
+  .naj-chip::before{content:'';width:7px;height:7px;border-radius:50%;background:#2e7d5b;flex:none}
+  .naj-chip.local{color:var(--amber-500)} .naj-chip.local::before{background:var(--amber-500)}
+  .naj-chip.off{color:var(--red-500)} .naj-chip.off::before{background:var(--red-500)}
+  .naj-who{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-600);
+    border:1px solid var(--border);border-radius:8px;background:#fff;padding:6px 11px}
+  .naj-who input{font:inherit;font-size:12px;border:1px solid transparent;background:transparent;
+    border-radius:5px;padding:2px 5px;width:92px;color:var(--ink-900)}
+  .naj-who input:hover{background:var(--cream-200)}
+  .naj-who input:focus{outline:none;background:#fff;border-color:var(--green-800)}
+  .naj-av{width:21px;height:21px;border-radius:50%;background:var(--green-800);color:#fff;font-size:10px;
+    display:inline-flex;align-items:center;justify-content:center;margin-left:-5px;border:2px solid #fff;font-weight:700}
+  .naj-av:first-of-type{margin-left:0}
+</style>
+
+<script>
+window.FIREBASE_CONFIG = {
+  apiKey:      "AIzaSyAAZOEbb3KE4XSZ0MqjsnknSmppp6El1t4",
+  authDomain:  "al-jadidi-catalog.firebaseapp.com",
+  databaseURL: "https://al-jadidi-catalog-default-rtdb.firebaseio.com",
+  projectId:   "al-jadidi-catalog",
+  appId:       "1:524534529074:web:97d1d2678bedfa419ed02b"
+};
+window.TRACKER_ROOM = "naseer-tracker";
+</script>
+
+<script type="module">
+  const cfg = window.FIREBASE_CONFIG || {};
+  if (cfg.databaseURL && cfg.apiKey) {
+    try{
+      const [{ initializeApp }, dbmod] = await Promise.all([
+        import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+        import("https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js")
+      ]);
+      window.FB = { app: initializeApp(cfg), ...dbmod };
+    }catch(e){ window.FB_ERR = e.message; }
+  }
+  window.dispatchEvent(new Event('fbready'));
+</script>
+
+<script>
+(function(){
+  const NAJ = window.NAJ = { shared:false };
+  const CLIENT = 'c'+Math.random().toString(36).slice(2,9);
+  let myName = localStorage.getItem('naj-name') || '';
+  let FB=null, db=null, R=null, pendingRender=false;
+
+  /* ---- toolbar controls ---- */
+  const chip = document.createElement('span');
+  chip.className='naj-chip local'; chip.id='naj-chip'; chip.textContent='Private copy';
+  const who = document.createElement('span');
+  who.className='naj-who'; who.style.display='none';
+  who.innerHTML = '<span>You:</span><input id="naj-name" placeholder="your name"><span id="naj-avs"></span>';
+  const reset = document.getElementById('btn-reset');
+  reset.parentNode.insertBefore(chip, reset.nextSibling);
+  reset.parentNode.insertBefore(who, chip.nextSibling);
+  const nameEl = document.getElementById('naj-name');
+  nameEl.value = myName;
+  nameEl.addEventListener('input', e=>{
+    myName = e.target.value; localStorage.setItem('naj-name', myName);
+    if(NAJ.shared) FB.set(FB.ref(db, R+'/presence/'+CLIENT), {name:myName||'Someone', t:Date.now()}).catch(()=>{});
+  });
+
+  function setChip(kind, text){
+    chip.className = 'naj-chip' + (kind==='shared' ? '' : kind==='off' ? ' off' : ' local');
+    chip.textContent = text;
+  }
+
+  /* ---- don't yank the page out from under someone who is typing ---- */
+  function activeInApp(){
+    const a = document.activeElement;
+    return a && a.matches && a.matches('#tbody input, #tbody select');
+  }
+  function safeRender(){
+    if(activeInApp()){ pendingRender = true; return; }
+    pendingRender = false;
+    render(); renderCountdowns();
+  }
+  document.addEventListener('focusout', ()=>{
+    if(pendingRender) setTimeout(()=>{ if(pendingRender && !activeInApp()) safeRender(); }, 120);
+  });
+
+  function start(){
+    const cfg = window.FIREBASE_CONFIG || {};
+    const configured = !!(cfg.databaseURL && cfg.apiKey);
+    if(!configured){ setChip('local','Private copy — saved in this browser'); return; }
+    if(!window.FB){
+      setChip('local','Private copy — sharing unavailable');
+      chip.title = window.FB_ERR || 'Firebase library did not load';
+      return;
+    }
+    FB = window.FB; db = FB.getDatabase(FB.app); R = window.TRACKER_ROOM || 'naseer-tracker';
+    NAJ.shared = true;
+    who.style.display = '';
+    setChip('shared','Shared — live');
+
+    NAJ.writeTask = (id, patch) => {
+      const u = {}; Object.keys(patch).forEach(k => u[k] = patch[k] == null ? '' : patch[k]);
+      FB.update(FB.ref(db, R+'/tasks/'+id), u).catch(err => setChip('off','Not saving: '+err.message));
+    };
+    NAJ.writeAll = (s) => {
+      FB.set(FB.ref(db, R+'/tasks'), (s && Object.keys(s).length) ? s : null)
+        .catch(err => setChip('off','Not saving: '+err.message));
+    };
+
+    // one-time migration: push this browser's existing progress up if the shared tracker is empty
+    FB.get(FB.ref(db, R+'/tasks')).then(snap=>{
+      if(!snap.exists()){
+        let local = {};
+        try{ local = JSON.parse(localStorage.getItem('naj_tracker_state_v3')) || {}; }catch(e){}
+        if(Object.keys(local).length) FB.set(FB.ref(db, R+'/tasks'), local).catch(()=>{});
+      }
+    }).catch(()=>{});
+
+    FB.onValue(FB.ref(db, R+'/tasks'), snap=>{
+      state = snap.val() || {};
+      setChip('shared','Shared — live');
+      safeRender();
+    }, err => setChip('off','Offline: '+err.message));
+
+    const me = FB.ref(db, R+'/presence/'+CLIENT);
+    FB.onDisconnect(me).remove();
+    FB.set(me, {name:myName||'Someone', t:Date.now()});
+    setInterval(()=>FB.set(me, {name:myName||'Someone', t:Date.now()}), 50000);
+    FB.onValue(FB.ref(db, R+'/presence'), s=>{
+      const others = Object.entries(s.val()||{}).filter(([k])=>k!==CLIENT).map(([,v])=>v.name||'?');
+      const box = document.getElementById('naj-avs');
+      box.innerHTML = others.slice(0,5).map(n=>
+        `<span class="naj-av" title="${String(n).replace(/"/g,'')}">${(String(n).trim()[0]||'?').toUpperCase()}</span>`).join('');
+      box.title = others.length ? others.join(', ')+' also here' : '';
+    });
+  }
+
+  window.addEventListener('fbready', start);
+  setTimeout(()=>{ if(!NAJ.shared && chip.textContent==='Private copy') start(); }, 4000);
+})();
+</script>
+</body>
+</html>
